@@ -1,0 +1,158 @@
+{
+  "intake": {
+    "metaTitle": "Inschrijfformulier",
+    "title": "Inschrijfformulier",
+    "honeypot": "Laat dit veld leeg",
+    "server": {
+      "ok": "✅ Bedankt! Uw inschrijving is ontvangen.",
+      "failPrefix": "❌ Mislukt:"
+    },
+    "sections": {
+      "residence": "Woonstatus",
+      "person": "Persoonlijke gegevens",
+      "addressContact": "Adres & Contact",
+      "emergency": "Noodcontact",
+      "bonaireSpecific": "Bonaire-specifiek",
+      "medical": "Medische voorgeschiedenis",
+      "consents": "Toestemmingen"
+    },
+    "labels": {
+      "residentType": "Ik ben",
+      "firstName": "Voornaam",
+      "lastName": "Achternaam",
+      "gender": "Geslacht",
+      "dateOfBirth": "Geboortedatum",
+      "street": "Straat",
+      "number": "Nr.",
+      "postalCode": "Postcode",
+      "city": "Plaats",
+      "country": "Land",
+      "countryOther": "Land (specificeer)",
+      "phone1": "Telefoon 1",
+      "hasWhatsApp": "Heeft WhatsApp",
+      "phone2": "Telefoon 2 (optioneel)",
+      "email": "E-mail",
+      "emergencyName": "Naam noodcontact",
+      "emergencyRelation": "Relatie",
+      "emergencyPhone": "Telefoon noodcontact",
+      "sedulaNumber": "Sedula-nummer",
+      "primaryPhysician": "Huisarts",
+      "height": "Lengte (cm)",
+      "weight": "Gewicht (kg)",
+      "lastDentalVisit": "Laatste tandartsbezoek",
+      "brushingFreq": "Poetsfrequentie",
+      "flossingFreq": "Flossen/tandenstokers",
+      "dentalAnxiety": "Angst voor tandarts",
+      "medications": "Medicatie (meerdere mogelijk)",
+      "med_bloedverdunners": "Welke bloedverdunners?",
+      "med_diabetes": "Welke diabetesmedicatie?",
+      "med_other": "Andere medicatie (specificeer)",
+      "allergies": "Allergieën (meerdere mogelijk)",
+      "allergy_other": "Andere allergie (specificeer)",
+      "conditions": "Aandoeningen (vink aan indien van toepassing)",
+      "complicationsBefore": "Complicaties bij eerdere behandelingen",
+      "complicationsDetails": "Specificeer complicaties",
+      "marketingConsent": "Ik wil e-mails/WhatsApp ontvangen over afspraken en nieuws.",
+      "privacyConsent": "Ik ga akkoord met de",
+      "privacyPolicy": "privacyverklaring"
+    },
+    "cond": {
+      "hartziekte": "Hartziekte",
+      "hogeBloeddruk": "Hoge bloeddruk",
+      "diabetes": "Diabetes",
+      "bloedingsstoornis": "Bloedingsstoornis",
+      "schildklier": "Schildklieraandoening",
+      "epilepsie": "Epilepsie",
+      "astma": "Astma",
+      "nierOfLever": "Nier-/leveraandoening",
+      "kunstgewricht": "Kunstgewricht",
+      "endocarditisProfylaxe": "Antibioticaprofylaxe nodig",
+      "zwangerschap": "Zwangerschap"
+    },
+    "options": {
+      "yes": "Ja",
+      "no": "Nee",
+      "residentType": {
+        "resident": "Inwoner van Bonaire",
+        "tourist": "Toerist / tijdelijk op Bonaire"
+      },
+      "gender": {
+        "male": "Man",
+        "female": "Vrouw",
+        "other": "Anders",
+        "prefer_not_to_say": "Zeg ik liever niet"
+      },
+      "relation": {
+        "partner": "Partner",
+        "ouder": "Ouder",
+        "kind": "Kind",
+        "familie": "Familie",
+        "vriend": "Vriend",
+        "collega": "Collega",
+        "overig": "Overig"
+      },
+      "country": {
+        "Bonaire": "Bonaire",
+        "Curaçao": "Curaçao",
+        "Aruba": "Aruba",
+        "Nederland": "Nederland",
+        "VS": "Verenigde Staten",
+        "België": "België",
+        "Duitsland": "Duitsland",
+        "Colombia": "Colombia",
+        "Venezuela": "Venezuela",
+        "Overig": "Overig"
+      },
+      "lastDentalVisit": {
+        "lt6m": "< 6 maanden",
+        "6to12m": "6–12 maanden",
+        "1to2y": "1–2 jaar",
+        "2to5y": "2–5 jaar",
+        "gt5y": "> 5 jaar",
+        "unknown": "Onbekend"
+      },
+      "brushingFreq": {
+        "1": "1×/dag",
+        "2": "2×/dag",
+        "3": "≥3×/dag",
+        "less": "Minder"
+      },
+      "flossingFreq": {
+        "daily": "Dagelijks",
+        "sometimes": "Soms",
+        "never": "Nooit"
+      },
+      "dentalAnxiety": {
+        "none": "Geen",
+        "mild": "Mild",
+        "moderate": "Matig",
+        "severe": "Ernstig"
+      },
+      "medications": {
+        "geen": "Geen",
+        "bloedverdunners": "Bloedverdunners",
+        "diabetesmedicatie": "Diabetesmedicatie",
+        "antihypertensiva": "Bloeddrukmedicatie",
+        "antidepressiva": "Antidepressiva",
+        "anders": "Anders"
+      },
+      "allergies": {
+        "geen": "Geen",
+        "penicilline": "Penicilline",
+        "lokale_verdoving": "Plaatselijke verdoving",
+        "latex": "Latex",
+        "nikkel": "Nikkel",
+        "anders": "Anders"
+      }
+    },
+    "placeholders": {
+      "med_bloedverdunners": "bijv. apixaban, rivaroxaban, warfarine…",
+      "med_diabetes": "bijv. metformine, insuline, GLP-1…",
+      "med_other": "Welke medicatie?"
+    },
+    "buttons": {
+      "submit": "Versturen",
+      "submitting": "Versturen…"
+    }
+  }
+}

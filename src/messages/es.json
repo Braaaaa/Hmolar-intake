@@ -1,0 +1,158 @@
+{
+  "intake": {
+    "metaTitle": "Formulario de inscripción",
+    "title": "Formulario de inscripción",
+    "honeypot": "Deje este campo vacío",
+    "server": {
+      "ok": "✅ ¡Gracias! Su inscripción ha sido recibida.",
+      "failPrefix": "❌ Falló:"
+    },
+    "sections": {
+      "residence": "Estatus de residencia",
+      "person": "Datos personales",
+      "addressContact": "Dirección y contacto",
+      "emergency": "Contacto de emergencia",
+      "bonaireSpecific": "Específico de Bonaire",
+      "medical": "Historial médico",
+      "consents": "Consentimientos"
+    },
+    "labels": {
+      "residentType": "Yo soy",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "gender": "Género",
+      "dateOfBirth": "Fecha de nacimiento",
+      "street": "Calle",
+      "number": "N.º",
+      "postalCode": "Código postal",
+      "city": "Ciudad",
+      "country": "País",
+      "countryOther": "País (especifique)",
+      "phone1": "Teléfono 1",
+      "hasWhatsApp": "Tiene WhatsApp",
+      "phone2": "Teléfono 2 (opcional)",
+      "email": "Correo electrónico",
+      "emergencyName": "Nombre del contacto de emergencia",
+      "emergencyRelation": "Relación",
+      "emergencyPhone": "Teléfono de emergencia",
+      "sedulaNumber": "Número de cédula",
+      "primaryPhysician": "Médico de cabecera",
+      "height": "Estatura (cm)",
+      "weight": "Peso (kg)",
+      "lastDentalVisit": "Última visita al dentista",
+      "brushingFreq": "Frecuencia de cepillado",
+      "flossingFreq": "Hilo/cepillos interdentales",
+      "dentalAnxiety": "Ansiedad dental",
+      "medications": "Medicamentos (puede marcar varios)",
+      "med_bloedverdunners": "¿Qué anticoagulantes?",
+      "med_diabetes": "¿Qué medicación para la diabetes?",
+      "med_other": "Otros medicamentos (especifique)",
+      "allergies": "Alergias (puede marcar varias)",
+      "allergy_other": "Otra alergia (especifique)",
+      "conditions": "Condiciones (marque si corresponde)",
+      "complicationsBefore": "Complicaciones en tratamientos previos",
+      "complicationsDetails": "Especifique las complicaciones",
+      "marketingConsent": "Deseo recibir correos/WhatsApp sobre citas y noticias.",
+      "privacyConsent": "Acepto la",
+      "privacyPolicy": "política de privacidad"
+    },
+    "cond": {
+      "hartziekte": "Cardiopatía",
+      "hogeBloeddruk": "Hipertensión",
+      "diabetes": "Diabetes",
+      "bloedingsstoornis": "Trastorno de coagulación",
+      "schildklier": "Trastorno tiroideo",
+      "epilepsie": "Epilepsia",
+      "astma": "Asma",
+      "nierOfLever": "Enfermedad renal/hepática",
+      "kunstgewricht": "Prótesis articular",
+      "endocarditisProfylaxe": "Se requiere profilaxis antibiótica",
+      "zwangerschap": "Embarazo"
+    },
+    "options": {
+      "yes": "Sí",
+      "no": "No",
+      "residentType": {
+        "resident": "Residente de Bonaire",
+        "tourist": "Turista / temporal en Bonaire"
+      },
+      "gender": {
+        "male": "Hombre",
+        "female": "Mujer",
+        "other": "Otro",
+        "prefer_not_to_say": "Prefiero no decirlo"
+      },
+      "relation": {
+        "partner": "Pareja",
+        "ouder": "Padre/madre",
+        "kind": "Hijo/a",
+        "familie": "Familiar",
+        "vriend": "Amigo/a",
+        "collega": "Colega",
+        "overig": "Otro"
+      },
+      "country": {
+        "Bonaire": "Bonaire",
+        "Curaçao": "Curaçao",
+        "Aruba": "Aruba",
+        "Nederland": "Países Bajos",
+        "VS": "Estados Unidos",
+        "België": "Bélgica",
+        "Duitsland": "Alemania",
+        "Colombia": "Colombia",
+        "Venezuela": "Venezuela",
+        "Overig": "Otro"
+      },
+      "lastDentalVisit": {
+        "lt6m": "< 6 meses",
+        "6to12m": "6–12 meses",
+        "1to2y": "1–2 años",
+        "2to5y": "2–5 años",
+        "gt5y": "> 5 años",
+        "unknown": "Desconocido"
+      },
+      "brushingFreq": {
+        "1": "1×/día",
+        "2": "2×/día",
+        "3": "≥3×/día",
+        "less": "Menos"
+      },
+      "flossingFreq": {
+        "daily": "Diariamente",
+        "sometimes": "A veces",
+        "never": "Nunca"
+      },
+      "dentalAnxiety": {
+        "none": "Ninguna",
+        "mild": "Leve",
+        "moderate": "Moderada",
+        "severe": "Severa"
+      },
+      "medications": {
+        "geen": "Ninguno",
+        "bloedverdunners": "Anticoagulantes",
+        "diabetesmedicatie": "Medicación para la diabetes",
+        "antihypertensiva": "Antihipertensivos",
+        "antidepressiva": "Antidepresivos",
+        "anders": "Otro"
+      },
+      "allergies": {
+        "geen": "Ninguna",
+        "penicilline": "Penicilina",
+        "lokale_verdoving": "Anestesia local",
+        "latex": "Látex",
+        "nikkel": "Níquel",
+        "anders": "Otra"
+      }
+    },
+    "placeholders": {
+      "med_bloedverdunners": "p. ej., apixabán, rivaroxabán, warfarina…",
+      "med_diabetes": "p. ej., metformina, insulina, GLP‑1…",
+      "med_other": "¿Qué medicamento?"
+    },
+    "buttons": {
+      "submit": "Enviar",
+      "submitting": "Enviando…"
+    }
+  }
+}

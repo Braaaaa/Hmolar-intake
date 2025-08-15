@@ -1,0 +1,143 @@
+{
+  "intake": {
+    "metaTitle": "Registration form",
+    "title": "Registration form",
+    "honeypot": "Leave this field empty",
+    "server": { "ok": "✅ Thanks! Your registration was received.", "failPrefix": "❌ Failed:" },
+    "sections": {
+      "residence": "Residence status",
+      "person": "Personal details",
+      "addressContact": "Address & Contact",
+      "emergency": "Emergency contact",
+      "bonaireSpecific": "Bonaire specific",
+      "medical": "Medical history",
+      "consents": "Consents"
+    },
+    "labels": {
+      "residentType": "I am",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "gender": "Gender",
+      "dateOfBirth": "Date of birth",
+      "street": "Street",
+      "number": "No.",
+      "postalCode": "Postal code",
+      "city": "City",
+      "country": "Country",
+      "countryOther": "Country (specify)",
+      "phone1": "Phone 1",
+      "hasWhatsApp": "Has WhatsApp",
+      "phone2": "Phone 2 (optional)",
+      "email": "Email",
+      "emergencyName": "Emergency name",
+      "emergencyRelation": "Relation",
+      "emergencyPhone": "Emergency phone",
+      "sedulaNumber": "Sedula number",
+      "primaryPhysician": "Primary physician",
+      "height": "Height (cm)",
+      "weight": "Weight (kg)",
+      "lastDentalVisit": "Last dental visit",
+      "brushingFreq": "Brushing frequency",
+      "flossingFreq": "Flossing/interdental",
+      "dentalAnxiety": "Dental anxiety",
+      "medications": "Medications (multiple possible)",
+      "med_bloedverdunners": "Which blood thinners?",
+      "med_diabetes": "Which diabetes meds?",
+      "med_other": "Other medication (specify)",
+      "allergies": "Allergies (multiple possible)",
+      "allergy_other": "Other allergy (specify)",
+      "conditions": "Conditions (tick if applicable)",
+      "complicationsBefore": "Previous treatment complications",
+      "complicationsDetails": "Specify complications",
+      "marketingConsent": "I want to receive emails/WhatsApp about appointments and news.",
+      "privacyConsent": "I agree to the",
+      "privacyPolicy": "privacy policy"
+    },
+    "cond": {
+      "hartziekte": "Heart disease",
+      "hogeBloeddruk": "High blood pressure",
+      "diabetes": "Diabetes",
+      "bloedingsstoornis": "Bleeding disorder",
+      "schildklier": "Thyroid disorder",
+      "epilepsie": "Epilepsy",
+      "astma": "Asthma",
+      "nierOfLever": "Kidney/Liver disease",
+      "kunstgewricht": "Joint prosthesis",
+      "endocarditisProfylaxe": "Antibiotic prophylaxis needed",
+      "zwangerschap": "Pregnancy"
+    },
+    "options": {
+      "yes": "Yes",
+      "no": "No",
+      "residentType": {
+        "resident": "Resident of Bonaire",
+        "tourist": "Tourist / temporary on Bonaire"
+      },
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "prefer_not_to_say": "Prefer not to say"
+      },
+      "relation": {
+        "partner": "Partner",
+        "ouder": "Parent",
+        "kind": "Child",
+        "familie": "Family",
+        "vriend": "Friend",
+        "collega": "Colleague",
+        "overig": "Other"
+      },
+      "country": {
+        "Bonaire": "Bonaire",
+        "Curaçao": "Curaçao",
+        "Aruba": "Aruba",
+        "Nederland": "Netherlands",
+        "VS": "United States",
+        "België": "Belgium",
+        "Duitsland": "Germany",
+        "Colombia": "Colombia",
+        "Venezuela": "Venezuela",
+        "Overig": "Other"
+      },
+      "lastDentalVisit": {
+        "lt6m": "< 6 months",
+        "6to12m": "6–12 months",
+        "1to2y": "1–2 years",
+        "2to5y": "2–5 years",
+        "gt5y": "> 5 years",
+        "unknown": "Unknown"
+      },
+      "brushingFreq": { "1": "1×/day", "2": "2×/day", "3": "≥3×/day", "less": "Less" },
+      "flossingFreq": { "daily": "Daily", "sometimes": "Sometimes", "never": "Never" },
+      "dentalAnxiety": {
+        "none": "None",
+        "mild": "Mild",
+        "moderate": "Moderate",
+        "severe": "Severe"
+      },
+      "medications": {
+        "geen": "None",
+        "bloedverdunners": "Blood thinners",
+        "diabetesmedicatie": "Diabetes medication",
+        "antihypertensiva": "Antihypertensives",
+        "antidepressiva": "Antidepressants",
+        "anders": "Other"
+      },
+      "allergies": {
+        "geen": "None",
+        "penicilline": "Penicillin",
+        "lokale_verdoving": "Local anaesthetic",
+        "latex": "Latex",
+        "nikkel": "Nickel",
+        "anders": "Other"
+      }
+    },
+    "placeholders": {
+      "med_bloedverdunners": "e.g. apixaban, rivaroxaban, warfarin…",
+      "med_diabetes": "e.g. metformin, insulin, GLP‑1…",
+      "med_other": "Which medication?"
+    },
+    "buttons": { "submit": "Submit", "submitting": "Submitting…" }
+  }
+}

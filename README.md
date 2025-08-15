@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HelloMolar Intake
 
-## Getting Started
+Meertalig (NL/EN/ES/PAP) intakeformulier voor een tandartspraktijk. Gebouwd met **Next.js 15 (App Router)**, **TypeScript**, **Tailwind CSS**, **react-hook-form**, **Zod** en **next-intl v4**. Klaar om uit te breiden naar een volwaardig praktijkmanagementpakket.
 
-First, run the development server:
+## 🚀 Features
+
+- 🌐 Meertalig: Nederlands, Engels, Spaans, Papiamentu (next-intl v4 + middleware)
+- 📱 Responsive en toegankelijk
+- ✅ Client-side validatie met Zod, formulier met react-hook-form
+- 🧠 Logica voor inwoner vs. toerist (Bonaire): verplichte velden wijzigen dynamisch
+- 💊 Medische anamnese met meerdere medicaties/allergieën + detailvelden
+- 🧹 Codekwaliteit: ESLint, Prettier, TypeScript checks, Husky pre-commit
+
+## 🧱 Tech stack
+
+- **Next.js 15** (App Router, Turbopack)
+- **TypeScript**
+- **Tailwind CSS 4**
+- **react-hook-form** + **@hookform/resolvers**
+- **Zod**
+- **next-intl v4**
+
+## 📦 Requirements
+
+- Node.js 18+
+- PNPM (aanbevolen): `npm i -g pnpm`
+
+## 🔧 Install & run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
+# open http://localhost:3000/nl/intake
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🗂️ Projectstructuur (belangrijkste)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+src/
+  app/
+    [locale]/
+      layout.tsx            # Intl provider + layout
+      intake/page.tsx       # Intake pagina (server)
+    intake/IntakeForm.tsx   # Intake formulier (client)
+    api/intake/route.ts     # API endpoint (POST)
+    globals.css
+  components/
+    LanguageSwitcher.tsx
+  i18n/
+    config.ts               # locales, helpers
+    request.ts              # next-intl request-config (v4)
+  messages/
+    nl.json
+    en.json
+    es.json
+    pap.json
+  lib/
+    validation/
+      intake.ts             # Zod schema's + types
+middleware.ts               # next-intl middleware
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🌍 i18n (next-intl v4)
 
-## Learn More
+- **Plugin** in `next.config.ts` (verplicht in v4):
+  ```ts
+  import type { NextConfig } from 'next';
+  import createNextIntlPlugin from 'next-intl/plugin';
 
-To learn more about Next.js, take a look at the following resources:
+  const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+  const nextConfig: NextConfig = {};
+  export default withNextIntl(nextConfig);
+  ```
+- **Request-config**: `src/i18n/request.ts` (laadt `../messages/${locale}.json`)
+- **Middleware**: `middleware.ts` met je locales (matcher voor NL/EN/ES/PAP)
+- **Gebruik**:
+  - Server: `createTranslator({locale, messages, namespace: 'intake'})`
+  - Client: `const t = useTranslations('intake')`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🧪 Kwaliteit
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm lint        # ESLint
+pnpm lint:fix    # ESLint --fix
+pnpm format      # Prettier
+pnpm typecheck   # TypeScript
+```
 
-## Deploy on Vercel
+## 🔒 Security & privacy (aanbevelingen)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Log **geen** gevoelige gegevens in productie.
+- Voeg **CSRF/CORS** regels toe wanneer je externe clients toelaat.
+- Gebruik **env-variabelen** voor API keys/DB connecties (zie `.env.example`).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📨 API
+
+`POST /api/intake`
+
+- Body: `IntakeFormData` (zie `src/lib/validation/intake.ts`)
+- Validatie server-side via Zod (`IntakeSchema.safeParse`)
+- TODO: persist in DB / e-mail notificatie
+
+## 🚀 Deploy
+
+- Vercel of Docker (Node 18+)
+- Vergeet niet: `next.config.ts` met next-intl plugin opnemen
+
+## 🤝 Contributie
+
+- Gebruik feature branches + PR’s
+- Houd ESLint/Prettier/TypeScript clean
+- Schrijf UI-strings uitsluitend via `messages/*.json`

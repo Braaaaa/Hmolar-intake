@@ -1,0 +1,158 @@
+{
+  "intake": {
+    "metaTitle": "Formashon di inskripshon",
+    "title": "Formashon di inskripshon",
+    "honeypot": "Laga e campo aki bashí",
+    "server": {
+      "ok": "✅ Danki! Bo inskripshon a wordu risibí.",
+      "failPrefix": "❌ Faya:"
+    },
+    "sections": {
+      "residence": "Status di biba",
+      "person": "Dato personal",
+      "addressContact": "Adres i kontakto",
+      "emergency": "Kontakto di emergencia",
+      "bonaireSpecific": "Específiko pa Boneiru",
+      "medical": "Historia médiko",
+      "consents": "Konsetimentu"
+    },
+    "labels": {
+      "residentType": "Mi ta",
+      "firstName": "Nòmber",
+      "lastName": "Fam",
+      "gender": "Sexo",
+      "dateOfBirth": "Fecha di nasementu",
+      "street": "Straat",
+      "number": "No.",
+      "postalCode": "Kode postal",
+      "city": "Sidad",
+      "country": "Pais",
+      "countryOther": "Pais (spesifiká)",
+      "phone1": "Telèfon 1",
+      "hasWhatsApp": "Tin WhatsApp",
+      "phone2": "Telèfon 2 (opsional)",
+      "email": "Email",
+      "emergencyName": "Nòmber di kontakto di emergencia",
+      "emergencyRelation": "Relashon",
+      "emergencyPhone": "Telèfon di emergencia",
+      "sedulaNumber": "Number di sedula",
+      "primaryPhysician": "Dòkter di cabesera",
+      "height": "Altura (cm)",
+      "weight": "Pèso (kg)",
+      "lastDentalVisit": "Ultimo bishita na dentista",
+      "brushingFreq": "Kuantu biaha bo ta laba bo boka",
+      "flossingFreq": "Floss/tandenstoker",
+      "dentalAnxiety": "Miedu pa dentista",
+      "medications": "Medikamentu (varios por ta posibel)",
+      "med_bloedverdunners": "Kua anticoagulante?",
+      "med_diabetes": "Kua medikamentu pa diabèt?",
+      "med_other": "Otro medikamentu (spesifiká)",
+      "allergies": "Alergia (varios por ta posibel)",
+      "allergy_other": "Otro alergia (spesifiká)",
+      "conditions": "Kondishon (marca si ta aplikabel)",
+      "complicationsBefore": "Komplikashon ku anterior tratamentu",
+      "complicationsDetails": "Spesifiká komplikashon",
+      "marketingConsent": "Mi ke risibí email/WhatsApp tokante sita i notisia.",
+      "privacyConsent": "Mi ta di akuerdo ku",
+      "privacyPolicy": "polítika di privasidat"
+    },
+    "cond": {
+      "hartziekte": "Enfermedat di kurason",
+      "hogeBloeddruk": "Presion haltu",
+      "diabetes": "Diabèt",
+      "bloedingsstoornis": "Desòrden di koagulashon",
+      "schildklier": "Problema ku tiroide",
+      "epilepsie": "Epilepsia",
+      "astma": "Asma",
+      "nierOfLever": "Enfermedat di nier/igado",
+      "kunstgewricht": "Prótesis artíkul",
+      "endocarditisProfylaxe": "Profilaxis ku antibiotiko nesesario",
+      "zwangerschap": "Embaraso"
+    },
+    "options": {
+      "yes": "Si",
+      "no": "No",
+      "residentType": {
+        "resident": "Residente di Boneiru",
+        "tourist": "Turista / temporal na Boneiru"
+      },
+      "gender": {
+        "male": "Hòmber",
+        "female": "Muhe",
+        "other": "Otro",
+        "prefer_not_to_say": "Preferí no bisa"
+      },
+      "relation": {
+        "partner": "Pareha",
+        "ouder": "Mama/Papa",
+        "kind": "Yu",
+        "familie": "Fam",
+        "vriend": "Amigu",
+        "collega": "Koleg",
+        "overig": "Otro"
+      },
+      "country": {
+        "Bonaire": "Boneiru",
+        "Curaçao": "Kòrsou",
+        "Aruba": "Aruba",
+        "Nederland": "Hulanda",
+        "VS": "Merka",
+        "België": "Bèlgika",
+        "Duitsland": "Alemania",
+        "Colombia": "Kolombia",
+        "Venezuela": "Venesuela",
+        "Overig": "Otro"
+      },
+      "lastDentalVisit": {
+        "lt6m": "< 6 luna",
+        "6to12m": "6–12 luna",
+        "1to2y": "1–2 aña",
+        "2to5y": "2–5 aña",
+        "gt5y": "> 5 aña",
+        "unknown": "Desconosí"
+      },
+      "brushingFreq": {
+        "1": "1×/dia",
+        "2": "2×/dia",
+        "3": "≥3×/dia",
+        "less": "Menos"
+      },
+      "flossingFreq": {
+        "daily": "Tur dia",
+        "sometimes": "Un biaha biaha",
+        "never": "Nunka"
+      },
+      "dentalAnxiety": {
+        "none": "Ningun",
+        "mild": "Leve",
+        "moderate": "Moderá",
+        "severe": "Grave"
+      },
+      "medications": {
+        "geen": "Ningun",
+        "bloedverdunners": "Anticoagulante",
+        "diabetesmedicatie": "Medikamentu pa diabèt",
+        "antihypertensiva": "Antihipertensivo",
+        "antidepressiva": "Antidepresivo",
+        "anders": "Otro"
+      },
+      "allergies": {
+        "geen": "Ningun",
+        "penicilline": "Penisilin",
+        "lokale_verdoving": "Anestesia lokal",
+        "latex": "Lateks",
+        "nikkel": "Níkel",
+        "anders": "Otro"
+      }
+    },
+    "placeholders": {
+      "med_bloedverdunners": "p.ej. apixaban, rivaroxaban, warfarin…",
+      "med_diabetes": "p.ej. metformina, insulina, GLP-1…",
+      "med_other": "Kua medikamentu?"
+    },
+    "buttons": {
+      "submit": "Manda",
+      "submitting": "Mandando…"
+    }
+  }
+}
