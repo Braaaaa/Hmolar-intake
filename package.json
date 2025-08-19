@@ -10,7 +10,6 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "typecheck": "tsc --noEmit",
-    "prepare": "husky install"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -34,7 +33,6 @@
     "eslint-config-next": "15.4.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "husky": "^8.0.0",
     "lint-staged": "^16.1.5",
     "prettier": "^3.6.2",
     "tailwindcss": "^4",
