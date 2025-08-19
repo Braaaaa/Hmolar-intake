@@ -1,3 +1,19 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
-pnpm lint-staged
+
+# Allow easy bypass for tools/CI:
+#   HUSKY=0 git commit -m "..."
+#   or git commit --no-verify
+[ -n "$HUSKY" ] && [ "$HUSKY" = "0" ] && exit 0
+[ -n "$SKIP_HOOKS" ] && exit 0
+
+# If lint-staged is installed locally, run it directly (no pnpm PATH needed)
+if [ -x "./node_modules/.bin/lint-staged" ]; then
+  ./node_modules/.bin/lint-staged
+  exit $?
+fi
+
+# Fallbacks if node_modules isn’t installed (don’t auto-install on commit)
+echo "⚠️  lint-staged not found at ./node_modules/.bin."
+echo "   Run your package install (pnpm i / npm ci) and try again."
+exit 1
