@@ -671,7 +671,12 @@ export default function IntakeForm() {
           <input type="checkbox" {...register('privacyConsent')} className="mt-1" />
           <span className="text-sm">
             {t('labels.privacyConsent')}{' '}
-            <a href="#" className="underline">
+            <a
+              href="/privacy-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
               {t('labels.privacyPolicy')}
             </a>
             .

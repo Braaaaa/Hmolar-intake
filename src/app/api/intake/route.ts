@@ -20,14 +20,11 @@ export async function POST(req: Request) {
 
     // TODO: hier komt DB‑opslag / e‑mail / notificatie
     // Voor nu loggen we het server‑side:
-    console.log('New intake:', {
-      ...parsed.data,
-      // gevoelige data log je in productie NIET in plaintext
-    });
+    console.log('New intake received and validated successfully.');
 
     return Response.json({ ok: true });
   } catch (err) {
-    console.error(err);
+    console.error('Error processing intake:', err instanceof Error ? err.message : String(err));
     return Response.json({ ok: false, message: 'Interne serverfout' }, { status: 500 });
   }
 }

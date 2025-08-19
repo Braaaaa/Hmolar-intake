@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 // Helpers & enums
-const phoneRegex = /^[+()0-9\s-]{6,20}$/;
-const sedulaRegex = /^[A-Za-z0-9\-]{5,20}$/;
+const phoneRegex = /^\+?[\d\s-()]{7,20}$/;
+const sedulaRegex = /^[0-9]{9}$/;
 
 export const ResidentTypeEnum = z.enum(['resident', 'tourist']);
 export const GenderEnum = z.enum(['male', 'female', 'other', 'prefer_not_to_say']);
@@ -49,14 +49,20 @@ const AllergyOptionEnum = z.enum([
 
 export const MedicalHistorySchema = z
   .object({
-    heightCm: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^\d{2,3}$/.test(v), { message: 'Gebruik centimeters (bijv. 175)' }),
-    weightKg: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^\d{2,3}$/.test(v), { message: 'Gebruik kilogram (bijv. 70)' }),
+    heightCm: z.coerce
+      .number({ invalid_type_error: 'Vul een getal in' })
+      .int()
+      .positive()
+      .min(50, 'Te klein')
+      .max(250, 'Te groot')
+      .optional(),
+    weightKg: z.coerce
+      .number({ invalid_type_error: 'Vul een getal in' })
+      .int()
+      .positive()
+      .min(20, 'Te licht')
+      .max(300, 'Te zwaar')
+      .optional(),
 
     medicationsSelected: z.array(MedicationOptionEnum).default([]),
     medicationDetails: z.object({
