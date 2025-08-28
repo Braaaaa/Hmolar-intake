@@ -736,9 +736,17 @@ export default function IntakeForm() {
           <input type="checkbox" {...register('privacyConsent')} className="mt-1" />
           <span className="text-sm">
             {t('labels.privacyConsent')}{' '}
-            <a href="#" className="underline">
+            <button
+              type="button"
+              className="underline"
+              onClick={(e) => {
+                // Prevent toggling the checkbox and avoid page jump to top
+                e.stopPropagation();
+                // TODO: open privacy policy modal or navigate to a policy page
+              }}
+            >
               {t('labels.privacyPolicy')}
-            </a>
+            </button>
             .
           </span>
         </label>
