@@ -3,7 +3,10 @@
     "metaTitle": "Registration form",
     "title": "Registration form",
     "honeypot": "Leave this field empty",
-    "server": { "ok": "✅ Thanks! Your registration was received.", "failPrefix": "❌ Failed:" },
+    "server": {
+      "success": "Successful registration, thank you for your interest in our Dental Clinic",
+      "error": "Ooops, something went wrong, please contact us"
+    },
     "sections": {
       "residence": "Residence status",
       "person": "Personal details",

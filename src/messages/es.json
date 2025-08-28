@@ -4,8 +4,8 @@
     "title": "Formulario de inscripción",
     "honeypot": "Deje este campo vacío",
     "server": {
-      "ok": "✅ ¡Gracias! Su inscripción ha sido recibida.",
-      "failPrefix": "❌ Falló:"
+      "success": "Registro exitoso, gracias por su interés en nuestra clínica dental",
+      "error": "Ups, algo salió mal, por favor contáctenos"
     },
     "sections": {
       "residence": "Estatus de residencia",

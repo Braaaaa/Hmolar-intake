@@ -4,8 +4,8 @@
     "title": "Inschrijfformulier",
     "honeypot": "Laat dit veld leeg",
     "server": {
-      "ok": "✅ Bedankt! Uw inschrijving is ontvangen.",
-      "failPrefix": "❌ Mislukt:"
+      "success": "Registratie gelukt, bedankt voor uw interesse in onze tandartspraktijk",
+      "error": "Oeps, er ging iets mis, neem alstublieft contact met ons op"
     },
     "sections": {
       "residence": "Woonstatus",

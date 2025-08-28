@@ -4,8 +4,8 @@
     "title": "Formashon di inskripshon",
     "honeypot": "Laga e campo aki bashí",
     "server": {
-      "ok": "✅ Danki! Bo inskripshon a wordu risibí.",
-      "failPrefix": "❌ Faya:"
+      "success": "Rejistro a logra, danki pa bo interes den nos klinika dental",
+      "error": "Ups, algu a bai malu, por fabor tuma kontaktu ku nos"
     },
     "sections": {
       "residence": "Status di biba",

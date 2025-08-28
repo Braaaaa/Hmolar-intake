@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+
 import { useTranslations } from 'next-intl';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, useWatch } from 'react-hook-form';
 
@@ -21,6 +23,7 @@ export default function IntakeForm() {
   const t = useTranslations('intake');
 
   const [serverMsg, setServerMsg] = useState<string | null>(null);
+  const [serverMsgType, setServerMsgType] = useState<'success' | 'error' | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const {
@@ -95,12 +98,10 @@ export default function IntakeForm() {
 
   const residentType = useWatch({ control, name: 'residentType' });
   const selectedCountry = useWatch({ control, name: 'address.country' });
-  const medsSelected =
-    (useWatch({ control, name: 'medical.medicationsSelected' }) ||
-      []) as IntakeFormData['medical']['medicationsSelected'];
-  const allergiesSelected =
-    (useWatch({ control, name: 'medical.allergiesSelected' }) ||
-      []) as IntakeFormData['medical']['allergiesSelected'];
+  const medsSelected = (useWatch({ control, name: 'medical.medicationsSelected' }) ||
+    []) as IntakeFormData['medical']['medicationsSelected'];
+  const allergiesSelected = (useWatch({ control, name: 'medical.allergiesSelected' }) ||
+    []) as IntakeFormData['medical']['allergiesSelected'];
   const complicationsBefore = useWatch({ control, name: 'medical.complicationsBefore' });
 
   useEffect(() => {
@@ -174,6 +175,7 @@ export default function IntakeForm() {
   const onSubmit = async (values: IntakeFormData) => {
     setSubmitting(true);
     setServerMsg(null);
+    setServerMsgType(null);
     try {
       const res = await fetch('/api/intake', {
         method: 'POST',
@@ -186,18 +188,27 @@ export default function IntakeForm() {
         throw new Error(data?.message || `Server error (${res.status})`);
       }
 
-      setServerMsg(t('server.ok'));
+      setServerMsg(t('server.success'));
+      setServerMsgType('success');
       // Reset the form without relying on DOM events
       reset();
     } catch (err: unknown) {
-      let message = t('server.failPrefix') + ' ';
-      if (err instanceof Error) message += err.message;
-      else if (typeof err === 'string') message += err;
-      setServerMsg(message);
+      setServerMsg(t('server.error'));
+      setServerMsgType('error');
     } finally {
       setSubmitting(false);
     }
   };
+
+  // Auto-dismiss server message after ~8 seconds
+  useEffect(() => {
+    if (!serverMsg) return;
+    const id = setTimeout(() => {
+      setServerMsg(null);
+      setServerMsgType(null);
+    }, 8000);
+    return () => clearTimeout(id);
+  }, [serverMsg]);
 
   const ErrorText = ({ msg }: { msg?: string }) =>
     msg ? <p className="mt-1 text-sm text-red-600">{msg}</p> : null;
@@ -229,7 +240,16 @@ export default function IntakeForm() {
       <h1 className="text-2xl font-semibold">{t('title')}</h1>
 
       {serverMsg && (
-        <div role="status" className="rounded-md border p-3 text-sm" aria-live="polite">
+        <div
+          role="status"
+          aria-live="polite"
+          className={
+            'rounded-md border p-3 text-sm ' +
+            (serverMsgType === 'success'
+              ? 'border-green-300 bg-green-50 text-green-800'
+              : 'border-red-300 bg-red-50 text-red-800')
+          }
+        >
           {serverMsg}
         </div>
       )}
@@ -264,12 +284,20 @@ export default function IntakeForm() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label className="block text-sm font-medium">{t('labels.firstName')}</label>
-            <input type="text" {...register('firstName')} className="mt-1 w-full rounded-md border p-2" />
+            <input
+              type="text"
+              {...register('firstName')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
             <ErrorText msg={errors.firstName?.message} />
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.lastName')}</label>
-            <input type="text" {...register('lastName')} className="mt-1 w-full rounded-md border p-2" />
+            <input
+              type="text"
+              {...register('lastName')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
             <ErrorText msg={errors.lastName?.message} />
           </div>
           <div>
@@ -281,7 +309,11 @@ export default function IntakeForm() {
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.dateOfBirth')}</label>
-            <input type="date" {...register('dateOfBirth')} className="mt-1 w-full rounded-md border p-2" />
+            <input
+              type="date"
+              {...register('dateOfBirth')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
             <ErrorText msg={errors.dateOfBirth?.message} />
           </div>
         </div>
@@ -292,17 +324,29 @@ export default function IntakeForm() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label className="block text-sm font-medium">{t('labels.street')}</label>
-            <input type="text" {...register('address.street')} className="mt-1 w-full rounded-md border p-2" />
+            <input
+              type="text"
+              {...register('address.street')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
             <ErrorText msg={errors.address?.street?.message} />
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.number')}</label>
-            <input type="text" {...register('address.number')} className="mt-1 w-full rounded-md border p-2" />
+            <input
+              type="text"
+              {...register('address.number')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
             <ErrorText msg={errors.address?.number?.message} />
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.city')}</label>
-            <input type="text" {...register('address.city')} className="mt-1 w-full rounded-md border p-2" />
+            <input
+              type="text"
+              {...register('address.city')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
             <ErrorText msg={errors.address?.city?.message} />
           </div>
 
@@ -310,12 +354,19 @@ export default function IntakeForm() {
             <>
               <div>
                 <label className="block text-sm font-medium">{t('labels.postalCode')}</label>
-                <input type="text" {...register('address.postalCode')} className="mt-1 w-full rounded-md border p-2" />
+                <input
+                  type="text"
+                  {...register('address.postalCode')}
+                  className="mt-1 w-full rounded-md border p-2"
+                />
                 <ErrorText msg={errors.address?.postalCode?.message} />
               </div>
               <div>
                 <label className="block text-sm font-medium">{t('labels.country')}</label>
-                <select {...register('address.country')} className="mt-1 w-full rounded-md border p-2">
+                <select
+                  {...register('address.country')}
+                  className="mt-1 w-full rounded-md border p-2"
+                >
                   {countryOptions}
                 </select>
                 <ErrorText msg={errors.address?.country?.message} />
@@ -324,7 +375,11 @@ export default function IntakeForm() {
               {selectedCountry === 'Overig' && (
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium">{t('labels.countryOther')}</label>
-                  <input type="text" {...register('address.countryOther')} className="mt-1 w-full rounded-md border p-2" />
+                  <input
+                    type="text"
+                    {...register('address.countryOther')}
+                    className="mt-1 w-full rounded-md border p-2"
+                  />
                   <ErrorText msg={errors.address?.countryOther?.message} />
                 </div>
               )}
@@ -375,19 +430,31 @@ export default function IntakeForm() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
             <label className="block text-sm font-medium">{t('labels.emergencyName')}</label>
-            <input type="text" {...register('emergencyContact.name')} className="mt-1 w-full rounded-md border p-2" />
+            <input
+              type="text"
+              {...register('emergencyContact.name')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
             <ErrorText msg={errors.emergencyContact?.name?.message} />
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.emergencyRelation')}</label>
-            <select {...register('emergencyContact.relation')} className="mt-1 w-full rounded-md border p-2">
+            <select
+              {...register('emergencyContact.relation')}
+              className="mt-1 w-full rounded-md border p-2"
+            >
               {relationOptions}
             </select>
             <ErrorText msg={errors.emergencyContact?.relation?.message} />
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.emergencyPhone')}</label>
-            <input type="tel" {...register('emergencyContact.phone')} className="mt-1 w-full rounded-md border p-2" inputMode="tel" />
+            <input
+              type="tel"
+              {...register('emergencyContact.phone')}
+              className="mt-1 w-full rounded-md border p-2"
+              inputMode="tel"
+            />
             <ErrorText msg={errors.emergencyContact?.phone?.message} />
           </div>
         </div>
@@ -409,7 +476,11 @@ export default function IntakeForm() {
             </div>
             <div>
               <label className="block text-sm font-medium">{t('labels.primaryPhysician')}</label>
-              <input type="text" {...register('primaryPhysician')} className="mt-1 w-full rounded-md border p-2" />
+              <input
+                type="text"
+                {...register('primaryPhysician')}
+                className="mt-1 w-full rounded-md border p-2"
+              />
               <ErrorText msg={errors.primaryPhysician?.message} />
             </div>
           </div>
@@ -421,18 +492,31 @@ export default function IntakeForm() {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
             <label className="block text-sm font-medium">{t('labels.height')}</label>
-            <input type="text" {...register('medical.heightCm')} className="mt-1 w-full rounded-md border p-2" placeholder="175" />
+            <input
+              type="text"
+              {...register('medical.heightCm')}
+              className="mt-1 w-full rounded-md border p-2"
+              placeholder="175"
+            />
             <ErrorText msg={errors.medical?.heightCm?.message} />
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.weight')}</label>
-            <input type="text" {...register('medical.weightKg')} className="mt-1 w-full rounded-md border p-2" placeholder="70" />
+            <input
+              type="text"
+              {...register('medical.weightKg')}
+              className="mt-1 w-full rounded-md border p-2"
+              placeholder="70"
+            />
             <ErrorText msg={errors.medical?.weightKg?.message} />
           </div>
 
           <div>
             <label className="block text-sm font-medium">{t('labels.lastDentalVisit')}</label>
-            <select {...register('medical.lastDentalVisit')} className="mt-1 w-full rounded-md border p-2">
+            <select
+              {...register('medical.lastDentalVisit')}
+              className="mt-1 w-full rounded-md border p-2"
+            >
               <option value="<6m">{t('options.lastDentalVisit.lt6m')}</option>
               <option value="6-12m">{t('options.lastDentalVisit.6to12m')}</option>
               <option value="1-2j">{t('options.lastDentalVisit.1to2y')}</option>
@@ -444,7 +528,10 @@ export default function IntakeForm() {
 
           <div>
             <label className="block text-sm font-medium">{t('labels.brushingFreq')}</label>
-            <select {...register('medical.brushingFreq')} className="mt-1 w-full rounded-md border p-2">
+            <select
+              {...register('medical.brushingFreq')}
+              className="mt-1 w-full rounded-md border p-2"
+            >
               <option value="1x/dag">{t('options.brushingFreq.1')}</option>
               <option value="2x/dag">{t('options.brushingFreq.2')}</option>
               <option value="≥3x/dag">{t('options.brushingFreq.3')}</option>
@@ -453,7 +540,10 @@ export default function IntakeForm() {
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.flossingFreq')}</label>
-            <select {...register('medical.flossingFreq')} className="mt-1 w-full rounded-md border p-2">
+            <select
+              {...register('medical.flossingFreq')}
+              className="mt-1 w-full rounded-md border p-2"
+            >
               <option value="dagelijks">{t('options.flossingFreq.daily')}</option>
               <option value="soms">{t('options.flossingFreq.sometimes')}</option>
               <option value="nooit">{t('options.flossingFreq.never')}</option>
@@ -461,7 +551,10 @@ export default function IntakeForm() {
           </div>
           <div>
             <label className="block text-sm font-medium">{t('labels.dentalAnxiety')}</label>
-            <select {...register('medical.dentalAnxiety')} className="mt-1 w-full rounded-md border p-2">
+            <select
+              {...register('medical.dentalAnxiety')}
+              className="mt-1 w-full rounded-md border p-2"
+            >
               <option value="geen">{t('options.dentalAnxiety.none')}</option>
               <option value="mild">{t('options.dentalAnxiety.mild')}</option>
               <option value="matig">{t('options.dentalAnxiety.moderate')}</option>
@@ -474,7 +567,14 @@ export default function IntakeForm() {
             <label className="block text-sm font-medium">{t('labels.medications')}</label>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
-                ['geen','bloedverdunners','diabetesmedicatie','antihypertensiva','antidepressiva','anders'] as const
+                [
+                  'geen',
+                  'bloedverdunners',
+                  'diabetesmedicatie',
+                  'antihypertensiva',
+                  'antidepressiva',
+                  'anders',
+                ] as const
               ).map((opt) => (
                 <label key={opt} className="flex items-center gap-2 text-sm">
                   <input
@@ -531,7 +631,9 @@ export default function IntakeForm() {
           <div className="md:col-span-3">
             <label className="block text-sm font-medium">{t('labels.allergies')}</label>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {(['geen','penicilline','lokale_verdoving','latex','nikkel','anders'] as const).map((opt) => (
+              {(
+                ['geen', 'penicilline', 'lokale_verdoving', 'latex', 'nikkel', 'anders'] as const
+              ).map((opt) => (
                 <label key={opt} className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
@@ -548,7 +650,11 @@ export default function IntakeForm() {
           {allergiesSelected.includes('anders') && (
             <div className="md:col-span-3">
               <label className="block text-sm font-medium">{t('labels.allergy_other')}</label>
-              <input type="text" {...register('medical.allergyDetails.anders')} className="mt-1 w-full rounded-md border p-2" />
+              <input
+                type="text"
+                {...register('medical.allergyDetails.anders')}
+                className="mt-1 w-full rounded-md border p-2"
+              />
               <ErrorText msg={getErrMsg(errors.medical?.allergyDetails?.anders)} />
             </div>
           )}
@@ -568,7 +674,10 @@ export default function IntakeForm() {
 
           <div>
             <label className="block text-sm font-medium">{t('labels.complicationsBefore')}</label>
-            <select {...register('medical.complicationsBefore')} className="mt-1 w-full rounded-md border p-2">
+            <select
+              {...register('medical.complicationsBefore')}
+              className="mt-1 w-full rounded-md border p-2"
+            >
               <option value="nee">{t('options.no')}</option>
               <option value="ja">{t('options.yes')}</option>
             </select>
@@ -577,8 +686,14 @@ export default function IntakeForm() {
 
           {complicationsBefore === 'ja' && (
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium">{t('labels.complicationsDetails')}</label>
-              <input type="text" {...register('medical.complicationsDetails')} className="mt-1 w-full rounded-md border p-2" />
+              <label className="block text-sm font-medium">
+                {t('labels.complicationsDetails')}
+              </label>
+              <input
+                type="text"
+                {...register('medical.complicationsDetails')}
+                className="mt-1 w-full rounded-md border p-2"
+              />
               <ErrorText msg={errors.medical?.complicationsDetails?.message} />
             </div>
           )}
