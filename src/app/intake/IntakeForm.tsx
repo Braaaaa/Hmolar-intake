@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -25,6 +25,7 @@ export default function IntakeForm() {
   const [serverMsg, setServerMsg] = useState<string | null>(null);
   const [serverMsgType, setServerMsgType] = useState<'success' | 'error' | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const alertRef = useRef<HTMLDivElement | null>(null);
 
   const {
     register,
@@ -210,6 +211,18 @@ export default function IntakeForm() {
     return () => clearTimeout(id);
   }, [serverMsg]);
 
+  // Smooth scroll to the alert when it appears
+  useEffect(() => {
+    if (!serverMsg) return;
+    const el = alertRef.current;
+    if (!el) return;
+    // Wait for layout, then scroll
+    const id = requestAnimationFrame(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [serverMsg]);
+
   const ErrorText = ({ msg }: { msg?: string }) =>
     msg ? <p className="mt-1 text-sm text-red-600">{msg}</p> : null;
 
@@ -241,16 +254,28 @@ export default function IntakeForm() {
 
       {serverMsg && (
         <div
+          ref={alertRef}
           role="status"
           aria-live="polite"
           className={
-            'rounded-md border p-3 text-sm ' +
+            'relative rounded-md border p-3 pr-9 text-sm ' +
             (serverMsgType === 'success'
               ? 'border-green-300 bg-green-50 text-green-800'
               : 'border-red-300 bg-red-50 text-red-800')
           }
         >
           {serverMsg}
+          <button
+            type="button"
+            aria-label={t('buttons.close')}
+            onClick={() => {
+              setServerMsg(null);
+              setServerMsgType(null);
+            }}
+            className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded hover:bg-black/10 focus:outline-none focus:ring-2 focus:ring-black/20"
+          >
+            <span aria-hidden>×</span>
+          </button>
         </div>
       )}
 

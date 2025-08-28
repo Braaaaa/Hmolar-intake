@@ -152,7 +152,8 @@
     },
     "buttons": {
       "submit": "Versturen",
-      "submitting": "Versturen…"
+      "submitting": "Versturen…",
+      "close": "Sluiten"
     }
   }
 }

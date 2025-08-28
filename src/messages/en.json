@@ -141,6 +141,6 @@
       "med_diabetes": "e.g. metformin, insulin, GLP‑1…",
       "med_other": "Which medication?"
     },
-    "buttons": { "submit": "Submit", "submitting": "Submitting…" }
+    "buttons": { "submit": "Submit", "submitting": "Submitting…", "close": "Close" }
   }
 }

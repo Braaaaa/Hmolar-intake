@@ -152,7 +152,8 @@
     },
     "buttons": {
       "submit": "Enviar",
-      "submitting": "Enviando…"
+      "submitting": "Enviando…",
+      "close": "Cerrar"
     }
   }
 }

@@ -152,7 +152,8 @@
     },
     "buttons": {
       "submit": "Manda",
-      "submitting": "Mandando…"
+      "submitting": "Mandando…",
+      "close": "Sera"
     }
   }
 }
