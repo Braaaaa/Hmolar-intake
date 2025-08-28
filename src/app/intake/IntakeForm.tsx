@@ -37,6 +37,8 @@ export default function IntakeForm() {
     getValues,
   } = useForm<IntakeFormData>({
     resolver: zodResolver(IntakeSchema),
+    // Prevent auto-focusing the first error, which can cause scroll jumps
+    shouldFocusError: false,
     defaultValues: {
       residentType: 'resident',
       gender: 'other',
