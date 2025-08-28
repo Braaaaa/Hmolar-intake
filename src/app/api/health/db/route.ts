@@ -1,0 +1,61 @@
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+
+function safeParseDbUrl(raw?: string) {
+  if (!raw) return { present: false };
+  try {
+    const tmp = raw.replace(/^postgres(ql)?:\/\//, "http://");
+    const u = new URL(tmp);
+    const user = u.username || "unknown";
+    const host = u.hostname || "unknown";
+    const port = u.port || "unknown";
+    const db = (u.pathname || "").replace(/^\//, "") || "unknown";
+    return { present: true, user, host, port, db, redacted: `postgresql://${user}:***@${host}:${port}/${db}` };
+  } catch {
+    return { present: true, parseError: true };
+  }
+}
+
+/**
+ * Health diagnostics for database connectivity and basic queries.
+ * Returns env info and success/error for each step.
+ */
+export async function GET() {
+  const diagnostics: any = {
+    now: new Date().toISOString(),
+    env: process.env.NODE_ENV || "unknown",
+    databaseUrl: safeParseDbUrl(process.env.DATABASE_URL),
+    directUrl: safeParseDbUrl(process.env.DIRECT_URL),
+    steps: { prismaConnect: { ok: false }, pingSelect1: { ok: false }, countIntakeSubmission: { ok: false } },
+  };
+
+  try {
+    await prisma.$connect();
+    diagnostics.steps.prismaConnect.ok = true;
+  } catch (e: any) {
+    diagnostics.steps.prismaConnect.error = String(e?.message || e);
+    return NextResponse.json({ ok: false, diagnostics }, { status: 500 });
+  }
+
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    diagnostics.steps.pingSelect1.ok = true;
+  } catch (e: any) {
+    diagnostics.steps.pingSelect1.error = String(e?.message || e);
+    return NextResponse.json({ ok: false, diagnostics }, { status: 500 });
+  }
+
+  try {
+    const count = await prisma.intakeSubmission.count();
+    diagnostics.steps.countIntakeSubmission.ok = true;
+    diagnostics.steps.countIntakeSubmission.count = count;
+  } catch (e: any) {
+    diagnostics.steps.countIntakeSubmission.error = String(e?.message || e);
+    return NextResponse.json({ ok: false, diagnostics }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true, diagnostics });
+}
