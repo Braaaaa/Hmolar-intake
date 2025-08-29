@@ -251,7 +251,11 @@ export default function IntakeForm() {
   ];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="mx-auto max-w-3xl space-y-6 p-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      noValidate
+      className="prevent-scroll-anchor mx-auto max-w-3xl space-y-6 p-4"
+    >
       <h1 className="text-2xl font-semibold">{t('title')}</h1>
 
       {serverMsg && (
@@ -603,18 +607,26 @@ export default function IntakeForm() {
                   'anders',
                 ] as const
               ).map((opt) => {
-                const id = `med-opt-${opt}`;
+                const isOn = medsSelected.includes(opt);
                 return (
                   <div key={opt} className="flex items-center gap-2 text-sm">
-                    <input
-                      id={id}
-                      type="checkbox"
-                      checked={medsSelected.includes(opt)}
-                      onChange={() => toggleArray('medical.medicationsSelected', opt)}
-                    />
-                    <label htmlFor={id} className="cursor-pointer select-none">
-                      {t(`options.medications.${opt}`)}
-                    </label>
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={isOn}
+                      onClick={() => toggleArray('medical.medicationsSelected', opt)}
+                      className={
+                        'flex h-4 w-4 items-center justify-center rounded border ' +
+                        (isOn ? 'border-black bg-black text-white' : 'border-gray-400 bg-white')
+                      }
+                    >
+                      {isOn ? (
+                        <span className="leading-none" aria-hidden>
+                          ✓
+                        </span>
+                      ) : null}
+                    </button>
+                    <span className="select-none">{t(`options.medications.${opt}`)}</span>
                   </div>
                 );
               })}
@@ -667,18 +679,26 @@ export default function IntakeForm() {
               {(
                 ['geen', 'penicilline', 'lokale_verdoving', 'latex', 'nikkel', 'anders'] as const
               ).map((opt) => {
-                const id = `alg-opt-${opt}`;
+                const isOn = allergiesSelected.includes(opt);
                 return (
                   <div key={opt} className="flex items-center gap-2 text-sm">
-                    <input
-                      id={id}
-                      type="checkbox"
-                      checked={allergiesSelected.includes(opt)}
-                      onChange={() => toggleArray('medical.allergiesSelected', opt)}
-                    />
-                    <label htmlFor={id} className="cursor-pointer select-none">
-                      {t(`options.allergies.${opt}`)}
-                    </label>
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={isOn}
+                      onClick={() => toggleArray('medical.allergiesSelected', opt)}
+                      className={
+                        'flex h-4 w-4 items-center justify-center rounded border ' +
+                        (isOn ? 'border-black bg-black text-white' : 'border-gray-400 bg-white')
+                      }
+                    >
+                      {isOn ? (
+                        <span className="leading-none" aria-hidden>
+                          ✓
+                        </span>
+                      ) : null}
+                    </button>
+                    <span className="select-none">{t(`options.allergies.${opt}`)}</span>
                   </div>
                 );
               })}
