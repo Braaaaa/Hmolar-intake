@@ -39,6 +39,9 @@ export default function IntakeForm() {
     resolver: zodResolver(IntakeSchema),
     // Prevent auto-focusing the first error, which can cause scroll jumps
     shouldFocusError: false,
+    // Unregister inputs when unmounted so hidden fields (e.g., resident-only)
+    // do not submit empty strings and trigger validation for tourists.
+    shouldUnregister: true,
     defaultValues: {
       residentType: 'resident',
       gender: 'other',
