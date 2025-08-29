@@ -602,20 +602,22 @@ export default function IntakeForm() {
                   'antidepressiva',
                   'anders',
                 ] as const
-              ).map((opt) => (
-                <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={medsSelected.includes(opt)}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleArray('medical.medicationsSelected', opt);
-                    }}
-                  />
-                  <span>{t(`options.medications.${opt}`)}</span>
-                </label>
-              ))}
+              ).map((opt) => {
+                const id = `med-opt-${opt}`;
+                return (
+                  <div key={opt} className="flex items-center gap-2 text-sm">
+                    <input
+                      id={id}
+                      type="checkbox"
+                      checked={medsSelected.includes(opt)}
+                      onChange={() => toggleArray('medical.medicationsSelected', opt)}
+                    />
+                    <label htmlFor={id} className="cursor-pointer select-none">
+                      {t(`options.medications.${opt}`)}
+                    </label>
+                  </div>
+                );
+              })}
             </div>
             <ErrorText msg={getErrMsg(errors.medical?.medicationsSelected)} />
           </div>
@@ -664,20 +666,22 @@ export default function IntakeForm() {
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 ['geen', 'penicilline', 'lokale_verdoving', 'latex', 'nikkel', 'anders'] as const
-              ).map((opt) => (
-                <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={allergiesSelected.includes(opt)}
-                    onChange={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      toggleArray('medical.allergiesSelected', opt);
-                    }}
-                  />
-                  <span>{t(`options.allergies.${opt}`)}</span>
-                </label>
-              ))}
+              ).map((opt) => {
+                const id = `alg-opt-${opt}`;
+                return (
+                  <div key={opt} className="flex items-center gap-2 text-sm">
+                    <input
+                      id={id}
+                      type="checkbox"
+                      checked={allergiesSelected.includes(opt)}
+                      onChange={() => toggleArray('medical.allergiesSelected', opt)}
+                    />
+                    <label htmlFor={id} className="cursor-pointer select-none">
+                      {t(`options.allergies.${opt}`)}
+                    </label>
+                  </div>
+                );
+              })}
             </div>
             <ErrorText msg={getErrMsg(errors.medical?.allergiesSelected)} />
           </div>
