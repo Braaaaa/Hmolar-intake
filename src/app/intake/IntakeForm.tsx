@@ -603,11 +603,15 @@ export default function IntakeForm() {
                   'anders',
                 ] as const
               ).map((opt) => (
-                <label key={opt} className="flex items-center gap-2 text-sm">
+                <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm">
                   <input
                     type="checkbox"
                     checked={medsSelected.includes(opt)}
-                    onChange={() => toggleArray('medical.medicationsSelected', opt)}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleArray('medical.medicationsSelected', opt);
+                    }}
                   />
                   <span>{t(`options.medications.${opt}`)}</span>
                 </label>
@@ -661,11 +665,15 @@ export default function IntakeForm() {
               {(
                 ['geen', 'penicilline', 'lokale_verdoving', 'latex', 'nikkel', 'anders'] as const
               ).map((opt) => (
-                <label key={opt} className="flex items-center gap-2 text-sm">
+                <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm">
                   <input
                     type="checkbox"
                     checked={allergiesSelected.includes(opt)}
-                    onChange={() => toggleArray('medical.allergiesSelected', opt)}
+                    onChange={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleArray('medical.allergiesSelected', opt);
+                    }}
                   />
                   <span>{t(`options.allergies.${opt}`)}</span>
                 </label>
