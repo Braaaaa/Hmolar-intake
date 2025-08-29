@@ -154,6 +154,10 @@
       "submit": "Versturen",
       "submitting": "Versturen…",
       "close": "Sluiten"
+    },
+    "validation": {
+      "modalTitle": "Corrigeer het volgende",
+      "generic": "Er zijn ongeldige of ontbrekende velden."
     }
   }
 }

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { FieldErrors } from 'react-hook-form';
 import { useForm, useWatch } from 'react-hook-form';
 
 import {
@@ -26,6 +27,8 @@ export default function IntakeForm() {
   const [serverMsgType, setServerMsgType] = useState<'success' | 'error' | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const alertRef = useRef<HTMLDivElement | null>(null);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [validationMessages, setValidationMessages] = useState<string[]>([]);
 
   const {
     register,
@@ -198,12 +201,33 @@ export default function IntakeForm() {
       setServerMsgType('success');
       // Reset the form without relying on DOM events
       reset();
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       setServerMsg(t('server.error'));
       setServerMsgType('error');
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const collectErrorMessages = (errs: FieldErrors<IntakeFormData>): string[] => {
+    const out: string[] = [];
+    const walk = (node: unknown) => {
+      if (!node || typeof node !== 'object') return;
+      const rec = node as Record<string, unknown>;
+      if (Object.prototype.hasOwnProperty.call(rec, 'message')) {
+        const m = (rec as { message?: unknown }).message;
+        if (typeof m === 'string') out.push(m);
+      }
+      for (const v of Object.values(rec)) walk(v);
+    };
+    walk(errs as unknown as Record<string, unknown>);
+    return Array.from(new Set(out)).filter(Boolean);
+  };
+
+  const onInvalid = (errs: FieldErrors<IntakeFormData>) => {
+    const msgs = collectErrorMessages(errs);
+    setValidationMessages(msgs);
+    setShowValidationModal(true);
   };
 
   // Auto-dismiss server message after ~8 seconds
@@ -255,7 +279,7 @@ export default function IntakeForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
       noValidate
       className="prevent-scroll-anchor mx-auto max-w-3xl space-y-6 p-4"
     >
@@ -285,6 +309,41 @@ export default function IntakeForm() {
           >
             <span aria-hidden>×</span>
           </button>
+        </div>
+      )}
+
+      {showValidationModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setShowValidationModal(false)}
+        >
+          <div
+            className="max-h-[80vh] w-full max-w-lg overflow-auto rounded-md bg-white p-4 shadow"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <h2 className="text-lg font-medium">{t('validation.modalTitle')}</h2>
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-black/10"
+                aria-label={t('buttons.close')}
+                onClick={() => setShowValidationModal(false)}
+              >
+                <span aria-hidden>×</span>
+              </button>
+            </div>
+            {validationMessages.length > 0 ? (
+              <ul className="list-disc space-y-1 pl-5 text-sm">
+                {validationMessages.map((m, i) => (
+                  <li key={i}>{m}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm">{t('validation.generic')}</p>
+            )}
+          </div>
         </div>
       )}
 

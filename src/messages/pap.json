@@ -154,6 +154,10 @@
       "submit": "Manda",
       "submitting": "Mandando…",
       "close": "Sera"
+    },
+    "validation": {
+      "modalTitle": "Por fabor korehi e siguiente",
+      "generic": "Tin campo ku no ta valido òf ta falta."
     }
   }
 }

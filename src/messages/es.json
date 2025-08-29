@@ -154,6 +154,10 @@
       "submit": "Enviar",
       "submitting": "Enviando…",
       "close": "Cerrar"
+    },
+    "validation": {
+      "modalTitle": "Corrija lo siguiente",
+      "generic": "Hay campos inválidos o faltantes."
     }
   }
 }
