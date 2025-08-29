@@ -51,7 +51,7 @@ export default function IntakeForm() {
         postalCode: '',
       },
       phone1: { number: '', hasWhatsApp: true },
-      phone2: { number: '' },
+      // phone2 is optional; omit by default so validation won't require it
       email: '',
       emergencyContact: { name: '', relation: 'overig', phone: '' },
       medical: {
@@ -436,7 +436,9 @@ export default function IntakeForm() {
             <label className="block text-sm font-medium">{t('labels.phone2')}</label>
             <input
               type="tel"
-              {...register('phone2.number')}
+              {...register('phone2.number', {
+                setValueAs: (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+              })}
               className="mt-1 w-full rounded-md border p-2"
               inputMode="tel"
             />
