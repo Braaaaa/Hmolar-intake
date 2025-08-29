@@ -28,7 +28,9 @@ export default function IntakeForm() {
   const [submitting, setSubmitting] = useState(false);
   const alertRef = useRef<HTMLDivElement | null>(null);
   const [showValidationModal, setShowValidationModal] = useState(false);
-  const [validationMessages, setValidationMessages] = useState<string[]>([]);
+  const [validationItems, setValidationItems] = useState<Array<{ path: string; message: string }>>(
+    [],
+  );
 
   const {
     register,
@@ -209,24 +211,72 @@ export default function IntakeForm() {
     }
   };
 
-  const collectErrorMessages = (errs: FieldErrors<IntakeFormData>): string[] => {
-    const out: string[] = [];
-    const walk = (node: unknown) => {
+  const pathToLabelKey: Record<string, string> = {
+    residentType: 'residentType',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    gender: 'gender',
+    dateOfBirth: 'dateOfBirth',
+    'address.street': 'street',
+    'address.number': 'number',
+    'address.city': 'city',
+    'address.postalCode': 'postalCode',
+    'address.country': 'country',
+    'address.countryOther': 'countryOther',
+    'phone1.number': 'phone1',
+    'phone2.number': 'phone2',
+    email: 'email',
+    'emergencyContact.name': 'emergencyName',
+    'emergencyContact.relation': 'emergencyRelation',
+    'emergencyContact.phone': 'emergencyPhone',
+    sedulaNumber: 'sedulaNumber',
+    primaryPhysician: 'primaryPhysician',
+    'medical.heightCm': 'height',
+    'medical.weightKg': 'weight',
+    'medical.lastDentalVisit': 'lastDentalVisit',
+    'medical.brushingFreq': 'brushingFreq',
+    'medical.flossingFreq': 'flossingFreq',
+    'medical.dentalAnxiety': 'dentalAnxiety',
+    'medical.medicationsSelected': 'medications',
+    'medical.medicationDetails.bloedverdunners': 'med_bloedverdunners',
+    'medical.medicationDetails.diabetesmedicatie': 'med_diabetes',
+    'medical.medicationDetails.anders': 'med_other',
+    'medical.allergiesSelected': 'allergies',
+    'medical.allergyDetails.anders': 'allergy_other',
+    'medical.complicationsBefore': 'complicationsBefore',
+    'medical.complicationsDetails': 'complicationsDetails',
+    marketingConsent: 'marketingConsent',
+    privacyConsent: 'privacyConsent',
+  };
+
+  const collectErrorItems = (
+    errs: FieldErrors<IntakeFormData>,
+  ): Array<{ path: string; message: string }> => {
+    const out: Array<{ path: string; message: string }> = [];
+    const walk = (node: unknown, prefix: string[]) => {
       if (!node || typeof node !== 'object') return;
       const rec = node as Record<string, unknown>;
-      if (Object.prototype.hasOwnProperty.call(rec, 'message')) {
-        const m = (rec as { message?: unknown }).message;
-        if (typeof m === 'string') out.push(m);
+      if (typeof (rec as { message?: unknown }).message === 'string') {
+        out.push({ path: prefix.join('.'), message: (rec as { message: string }).message });
       }
-      for (const v of Object.values(rec)) walk(v);
+      for (const [k, v] of Object.entries(rec)) {
+        if (k === 'ref' || k === 'type' || k === 'types') continue;
+        walk(v, k === 'root' ? prefix : [...prefix, k]);
+      }
     };
-    walk(errs as unknown as Record<string, unknown>);
-    return Array.from(new Set(out)).filter(Boolean);
+    walk(errs as unknown as Record<string, unknown>, []);
+    // De-duplicate by path+message
+    const seen = new Set<string>();
+    return out.filter((it) => {
+      const key = `${it.path}|${it.message}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   };
 
   const onInvalid = (errs: FieldErrors<IntakeFormData>) => {
-    const msgs = collectErrorMessages(errs);
-    setValidationMessages(msgs);
+    setValidationItems(collectErrorItems(errs));
     setShowValidationModal(true);
   };
 
@@ -334,11 +384,23 @@ export default function IntakeForm() {
                 <span aria-hidden>×</span>
               </button>
             </div>
-            {validationMessages.length > 0 ? (
+            {validationItems.length > 0 ? (
               <ul className="list-disc space-y-1 pl-5 text-sm">
-                {validationMessages.map((m, i) => (
-                  <li key={i}>{m}</li>
-                ))}
+                {validationItems.map((it, i) => {
+                  const labelKey = pathToLabelKey[it.path];
+                  const label = labelKey ? t(`labels.${labelKey}`) : undefined;
+                  return (
+                    <li key={`${it.path}-${i}`}>
+                      {label ? (
+                        <>
+                          <span className="font-medium">{label}:</span> {it.message}
+                        </>
+                      ) : (
+                        it.message
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <p className="text-sm">{t('validation.generic')}</p>
