@@ -61,8 +61,4 @@ export async function POST(req: Request) {
   return NextResponse.redirect(new URL(returnTo, req.url));
 }
 
-export async function GET() {
-  // Not allowed; clear session and redirect to form
-  clearSessionCookie();
-  return NextResponse.redirect('/admin/login');
-}
+// Note: Do not export GET here; the page.tsx handles GET for /admin/login.
