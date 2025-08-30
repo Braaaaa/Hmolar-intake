@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 
 import { locales } from './src/i18n/config';
 import { routing } from './src/i18n/routing';
+import { verifySession } from './src/lib/auth';
 
 // Compose admin Basic Auth with internationalized routing.
 const intlMiddleware = createMiddleware(routing);
@@ -38,20 +39,21 @@ export default function middleware(req: Request) {
     : url.pathname;
 
   if (normalizedPath.startsWith('/admin')) {
-    // Debug logging in development to verify guard runs
-    if (process.env.NODE_ENV !== 'production') {
-      console.log('[middleware] admin path', {
-        url: url.pathname,
-        normalizedPath,
-        haveUser: !!process.env.ADMIN_USER,
-        havePass: !!process.env.ADMIN_PASS,
-        hasAuthHeader: !!req.headers.get('authorization'),
-      });
+    // Allow login endpoints without session
+    if (normalizedPath.startsWith('/admin/login')) {
+      return intlMiddleware(req as unknown as Parameters<typeof intlMiddleware>[0]);
     }
-    const haveCfg = !!process.env.ADMIN_USER && !!process.env.ADMIN_PASS;
-    if (!haveCfg) return new NextResponse('Admin auth not configured', { status: 503 });
-    if (!basicAuthOk(req)) return unauthorized();
-    // Auth OK, continue to next-intl + route handling
+    // Check signed session cookie; if invalid, redirect to login
+    const cookie = (req.headers.get('cookie') || '')
+      .split(';')
+      .find((c) => c.trim().startsWith('ADMIN_SESSION='));
+    const token = cookie ? decodeURIComponent(cookie.split('=')[1].trim()) : '';
+    const valid = token ? verifySession(token) : null;
+    if (!valid) {
+      const loginUrl = new URL('/admin/login', req.url);
+      loginUrl.searchParams.set('returnTo', url.pathname + url.search);
+      return NextResponse.redirect(loginUrl);
+    }
     return intlMiddleware(req as unknown as Parameters<typeof intlMiddleware>[0]);
   }
   return intlMiddleware(req as unknown as Parameters<typeof intlMiddleware>[0]);
