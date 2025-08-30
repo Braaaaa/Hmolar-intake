@@ -94,7 +94,9 @@ export default function IntakeForm() {
       marketingConsent: false,
       privacyConsent: false,
     },
-    mode: 'onBlur',
+    // Validate only on submit to avoid mid-typing jumps
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   });
 
   // Safely read a nested `message` string without using `any`.
