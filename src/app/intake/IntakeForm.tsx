@@ -63,8 +63,6 @@ export default function IntakeForm() {
       email: '',
       emergencyContact: { name: '', relation: 'overig', phone: '' },
       medical: {
-        heightCm: '',
-        weightKg: '',
         medicationsSelected: [],
         medicationDetails: { bloedverdunners: '', diabetesmedicatie: '', anders: '' },
         allergiesSelected: [],
@@ -235,8 +233,6 @@ export default function IntakeForm() {
     'emergencyContact.phone': 'emergencyPhone',
     sedulaNumber: 'sedulaNumber',
     primaryPhysician: 'primaryPhysician',
-    'medical.heightCm': 'height',
-    'medical.weightKg': 'weight',
     'medical.lastDentalVisit': 'lastDentalVisit',
     'medical.brushingFreq': 'brushingFreq',
     'medical.flossingFreq': 'flossingFreq',
@@ -665,27 +661,6 @@ export default function IntakeForm() {
       {/* Medical history */}
       <Section title={t('sections.medical')}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div>
-            <label className="block text-sm font-medium">{t('labels.height')}</label>
-            <input
-              type="text"
-              {...register('medical.heightCm')}
-              className="mt-1 w-full rounded-md border p-2"
-              placeholder="175"
-            />
-            <ErrorText msg={errors.medical?.heightCm?.message} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">{t('labels.weight')}</label>
-            <input
-              type="text"
-              {...register('medical.weightKg')}
-              className="mt-1 w-full rounded-md border p-2"
-              placeholder="70"
-            />
-            <ErrorText msg={errors.medical?.weightKg?.message} />
-          </div>
-
           <div>
             <label className="block text-sm font-medium">{t('labels.lastDentalVisit')}</label>
             <select

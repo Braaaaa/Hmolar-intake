@@ -48,15 +48,6 @@ const AllergyOptionEnum = z.enum([
 
 export const MedicalHistorySchema = z
   .object({
-    heightCm: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^\d{2,3}$/.test(v), { message: 'Gebruik centimeters (bijv. 175)' }),
-    weightKg: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^\d{2,3}$/.test(v), { message: 'Gebruik kilogram (bijv. 70)' }),
-
     medicationsSelected: z.array(MedicationOptionEnum).default([]),
     // Details are only required when specific meds are selected;
     // provide an empty object by default so missing details don't fail
