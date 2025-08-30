@@ -37,8 +37,6 @@
       "emergencyPhone": "Emergency phone",
       "sedulaNumber": "Sedula number",
       "primaryPhysician": "Primary physician",
-      "height": "Height (cm)",
-      "weight": "Weight (kg)",
       "lastDentalVisit": "Last dental visit",
       "brushingFreq": "Brushing frequency",
       "flossingFreq": "Flossing/interdental",
