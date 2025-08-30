@@ -38,6 +38,16 @@ export default function middleware(req: Request) {
     : url.pathname;
 
   if (normalizedPath.startsWith('/admin')) {
+    // Debug logging in development to verify guard runs
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[middleware] admin path', {
+        url: url.pathname,
+        normalizedPath,
+        haveUser: !!process.env.ADMIN_USER,
+        havePass: !!process.env.ADMIN_PASS,
+        hasAuthHeader: !!req.headers.get('authorization'),
+      });
+    }
     const haveCfg = !!process.env.ADMIN_USER && !!process.env.ADMIN_PASS;
     if (!haveCfg) return new NextResponse('Admin auth not configured', { status: 503 });
     if (!basicAuthOk(req)) return unauthorized();
