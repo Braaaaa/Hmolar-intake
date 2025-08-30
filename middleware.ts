@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 import { locales } from './src/i18n/config';
 import { routing } from './src/i18n/routing';
-import { verifySession } from './src/lib/auth';
 
 // Compose admin Basic Auth with internationalized routing.
 const intlMiddleware = createMiddleware(routing);
@@ -43,13 +42,12 @@ export default function middleware(req: Request) {
     if (normalizedPath.startsWith('/admin/login')) {
       return intlMiddleware(req as unknown as Parameters<typeof intlMiddleware>[0]);
     }
-    // Check signed session cookie; if invalid, redirect to login
+    // Check for presence of session cookie; detailed verification happens server-side
     const cookie = (req.headers.get('cookie') || '')
       .split(';')
       .find((c) => c.trim().startsWith('ADMIN_SESSION='));
     const token = cookie ? decodeURIComponent(cookie.split('=')[1].trim()) : '';
-    const valid = token ? verifySession(token) : null;
-    if (!valid) {
+    if (!token) {
       const loginUrl = new URL('/admin/login', req.url);
       loginUrl.searchParams.set('returnTo', url.pathname + url.search);
       return NextResponse.redirect(loginUrl);

@@ -11,7 +11,7 @@ export default async function Page(props: { searchParams?: Promise<{ returnTo?: 
   return (
     <main className="mx-auto max-w-sm p-6">
       <h1 className="mb-4 text-2xl font-semibold">Admin Login</h1>
-      <form method="POST" action="/admin/login" className="space-y-3">
+      <form method="POST" action="/admin/login/submit" className="space-y-3">
         <input type="hidden" name="returnTo" value={returnTo} />
         <input type="hidden" name="csrf" value={csrf} />
         <div>

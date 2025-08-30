@@ -1,12 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import {
-  clearSessionCookie,
-  hashPassword,
-  setSessionCookie,
-  verifyCsrfToken,
-  verifyPassword,
-} from '@/lib/auth';
+import { hashPassword, setSessionCookie, verifyCsrfToken, verifyPassword } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
@@ -60,5 +54,3 @@ export async function POST(req: Request) {
   setSessionCookie(user.id);
   return NextResponse.redirect(new URL(returnTo, req.url));
 }
-
-// Note: Do not export GET here; the page.tsx handles GET for /admin/login.
