@@ -270,8 +270,34 @@ export default function IntakeForm() {
   };
 
   const onInvalid = (errs: FieldErrors<IntakeFormData>) => {
-    setValidationItems(collectErrorItems(errs));
+    const items = collectErrorItems(errs);
+    setValidationItems(items);
     setShowValidationModal(true);
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        // Developer diagnostics (local only)
+        // Show a compact table of invalid fields + messages and a snapshot of current values
+        // Note: contains PII; do not enable in production
+
+        console.groupCollapsed('Intake validation errors');
+
+        console.table(
+          items.map((it) => ({
+            path: it.path,
+            label: pathToLabelKey[it.path] || '',
+            message: it.message,
+          })),
+        );
+
+        console.log('residentType:', residentType);
+
+        console.log('formValues:', getValues());
+
+        console.groupEnd();
+      } catch {
+        // ignore logging failures
+      }
+    }
   };
 
   // Auto-dismiss server message after ~8 seconds
