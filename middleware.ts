@@ -1,6 +1,7 @@
 import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 
+import { locales } from './src/i18n/config';
 import { routing } from './src/i18n/routing';
 
 // Compose admin Basic Auth with internationalized routing.
@@ -29,7 +30,14 @@ function basicAuthOk(req: Request): boolean {
 
 export default function middleware(req: Request) {
   const url = new URL(req.url);
-  if (url.pathname.startsWith('/admin')) {
+  // Normalize pathname by stripping a leading locale segment if present
+  const segments = url.pathname.split('/').filter(Boolean);
+  const first = segments[0];
+  const normalizedPath = (locales as readonly string[]).includes(first || '')
+    ? `/${segments.slice(1).join('/')}`
+    : url.pathname;
+
+  if (normalizedPath.startsWith('/admin')) {
     const haveCfg = !!process.env.ADMIN_USER && !!process.env.ADMIN_PASS;
     if (!haveCfg) return new NextResponse('Admin auth not configured', { status: 503 });
     if (!basicAuthOk(req)) return unauthorized();
