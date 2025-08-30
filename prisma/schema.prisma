@@ -1,0 +1,40 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+/// Stores a single submitted intake form and associated metadata.
+model IntakeSubmission {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  fullName     String
+  dob          DateTime
+  phone        String?
+  email        String?
+  residentType String
+  address      String?
+  country      String?
+
+  medications       Json
+  allergies         Json
+  conditions        Json
+  hadComplications  Boolean @default(false)
+  complicationsNote String?
+
+  locale          String
+  marketingOptIn  Boolean @default(false)
+  privacyAccepted Boolean
+  userAgent       String?
+  ipInet          String?
+  fingerprint     String?
+
+  encBlob Bytes?
+
+  @@index([createdAt])
+}

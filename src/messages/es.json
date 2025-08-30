@@ -4,8 +4,8 @@
     "title": "Formulario de inscripción",
     "honeypot": "Deje este campo vacío",
     "server": {
-      "ok": "✅ ¡Gracias! Su inscripción ha sido recibida.",
-      "failPrefix": "❌ Falló:"
+      "success": "Registro exitoso, gracias por su interés en nuestra clínica dental",
+      "error": "Ups, algo salió mal, por favor contáctenos"
     },
     "sections": {
       "residence": "Estatus de residencia",
@@ -37,8 +37,6 @@
       "emergencyPhone": "Teléfono de emergencia",
       "sedulaNumber": "Número de cédula",
       "primaryPhysician": "Médico de cabecera",
-      "height": "Estatura (cm)",
-      "weight": "Peso (kg)",
       "lastDentalVisit": "Última visita al dentista",
       "brushingFreq": "Frecuencia de cepillado",
       "flossingFreq": "Hilo/cepillos interdentales",
@@ -152,7 +150,12 @@
     },
     "buttons": {
       "submit": "Enviar",
-      "submitting": "Enviando…"
+      "submitting": "Enviando…",
+      "close": "Cerrar"
+    },
+    "validation": {
+      "modalTitle": "Corrija lo siguiente",
+      "generic": "Hay campos inválidos o faltantes."
     }
   }
 }

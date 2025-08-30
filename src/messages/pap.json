@@ -4,8 +4,8 @@
     "title": "Formashon di inskripshon",
     "honeypot": "Laga e campo aki bashí",
     "server": {
-      "ok": "✅ Danki! Bo inskripshon a wordu risibí.",
-      "failPrefix": "❌ Faya:"
+      "success": "Rejistro a logra, danki pa bo interes den nos klinika dental",
+      "error": "Ups, algu a bai malu, por fabor tuma kontaktu ku nos"
     },
     "sections": {
       "residence": "Status di biba",
@@ -37,8 +37,6 @@
       "emergencyPhone": "Telèfon di emergencia",
       "sedulaNumber": "Number di sedula",
       "primaryPhysician": "Dòkter di cabesera",
-      "height": "Altura (cm)",
-      "weight": "Pèso (kg)",
       "lastDentalVisit": "Ultimo bishita na dentista",
       "brushingFreq": "Kuantu biaha bo ta laba bo boka",
       "flossingFreq": "Floss/tandenstoker",
@@ -152,7 +150,12 @@
     },
     "buttons": {
       "submit": "Manda",
-      "submitting": "Mandando…"
+      "submitting": "Mandando…",
+      "close": "Sera"
+    },
+    "validation": {
+      "modalTitle": "Por fabor korehi e siguiente",
+      "generic": "Tin campo ku no ta valido òf ta falta."
     }
   }
 }

@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { zodResolver } from '@hookform/resolvers/zod';
+import type { FieldErrors } from 'react-hook-form';
 import { useForm, useWatch } from 'react-hook-form';
 
 import {
@@ -16,10 +17,20 @@ import {
 } from '@/lib/validation/intake';
 
 export default function IntakeForm() {
+  /**
+   * Intake form rendered as a client component.
+   * Uses react-hook-form with Zod for validation and next-intl for i18n.
+   */
   const t = useTranslations('intake');
 
   const [serverMsg, setServerMsg] = useState<string | null>(null);
+  const [serverMsgType, setServerMsgType] = useState<'success' | 'error' | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showValidationModal, setShowValidationModal] = useState(false);
+  const [validationItems, setValidationItems] = useState<Array<{ path: string; message: string }>>(
+    [],
+  );
+  const [showServerModal, setShowServerModal] = useState(false);
 
   const {
     register,
@@ -31,6 +42,11 @@ export default function IntakeForm() {
     getValues,
   } = useForm<IntakeFormData>({
     resolver: zodResolver(IntakeSchema),
+    // Prevent auto-focusing the first error, which can cause scroll jumps
+    shouldFocusError: false,
+    // Unregister inputs when unmounted so hidden fields (e.g., resident-only)
+    // do not submit empty strings and trigger validation for tourists.
+    shouldUnregister: true,
     defaultValues: {
       residentType: 'resident',
       gender: 'other',
@@ -43,12 +59,10 @@ export default function IntakeForm() {
         postalCode: '',
       },
       phone1: { number: '', hasWhatsApp: true },
-      phone2: { number: '' },
+      // phone2 is optional; omit by default so validation won't require it
       email: '',
       emergencyContact: { name: '', relation: 'overig', phone: '' },
       medical: {
-        heightCm: '',
-        weightKg: '',
         medicationsSelected: [],
         medicationDetails: { bloedverdunners: '', diabetesmedicatie: '', anders: '' },
         allergiesSelected: [],
@@ -78,10 +92,12 @@ export default function IntakeForm() {
       marketingConsent: false,
       privacyConsent: false,
     },
-    mode: 'onBlur',
+    // Validate only on submit to avoid mid-typing jumps
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   });
 
-  // Helper om veilig error.messages te lezen zónder 'any'
+  // Safely read a nested `message` string without using `any`.
   function getErrMsg(node: unknown): string | undefined {
     if (!node || typeof node !== 'object') return undefined;
     if ('message' in node) {
@@ -142,6 +158,10 @@ export default function IntakeForm() {
   type MedOpt = IntakeFormData['medical']['medicationsSelected'][number];
   type AllergyOpt = IntakeFormData['medical']['allergiesSelected'][number];
 
+  /**
+   * Toggle a value in a react-hook-form array field.
+   * Ensures mutual exclusivity for the special option 'geen' (none).
+   */
   const toggleArray = (
     field: 'medical.medicationsSelected' | 'medical.allergiesSelected',
     value: MedOpt | AllergyOpt,
@@ -166,27 +186,130 @@ export default function IntakeForm() {
   const onSubmit = async (values: IntakeFormData) => {
     setSubmitting(true);
     setServerMsg(null);
+    setServerMsgType(null);
     try {
       const res = await fetch('/api/intake', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
+
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
         throw new Error(data?.message || `Server error (${res.status})`);
       }
-      setServerMsg(t('server.ok'));
+
+      setServerMsg(t('server.success'));
+      setServerMsgType('success');
+      setShowServerModal(true);
+      // Reset the form without relying on DOM events
       reset();
-    } catch (err: unknown) {
-      let message = t('server.failPrefix') + ' ';
-      if (err instanceof Error) message += err.message;
-      else if (typeof err === 'string') message += err;
-      setServerMsg(message);
+    } catch (_err: unknown) {
+      setServerMsg(t('server.error'));
+      setServerMsgType('error');
+      setShowServerModal(true);
     } finally {
       setSubmitting(false);
     }
   };
+
+  const pathToLabelKey: Record<string, string> = {
+    residentType: 'residentType',
+    firstName: 'firstName',
+    lastName: 'lastName',
+    gender: 'gender',
+    dateOfBirth: 'dateOfBirth',
+    'address.street': 'street',
+    'address.number': 'number',
+    'address.city': 'city',
+    'address.postalCode': 'postalCode',
+    'address.country': 'country',
+    'address.countryOther': 'countryOther',
+    'phone1.number': 'phone1',
+    'phone2.number': 'phone2',
+    email: 'email',
+    'emergencyContact.name': 'emergencyName',
+    'emergencyContact.relation': 'emergencyRelation',
+    'emergencyContact.phone': 'emergencyPhone',
+    sedulaNumber: 'sedulaNumber',
+    primaryPhysician: 'primaryPhysician',
+    'medical.lastDentalVisit': 'lastDentalVisit',
+    'medical.brushingFreq': 'brushingFreq',
+    'medical.flossingFreq': 'flossingFreq',
+    'medical.dentalAnxiety': 'dentalAnxiety',
+    'medical.medicationsSelected': 'medications',
+    'medical.medicationDetails.bloedverdunners': 'med_bloedverdunners',
+    'medical.medicationDetails.diabetesmedicatie': 'med_diabetes',
+    'medical.medicationDetails.anders': 'med_other',
+    'medical.allergiesSelected': 'allergies',
+    'medical.allergyDetails.anders': 'allergy_other',
+    'medical.complicationsBefore': 'complicationsBefore',
+    'medical.complicationsDetails': 'complicationsDetails',
+    marketingConsent: 'marketingConsent',
+    privacyConsent: 'privacyConsent',
+  };
+
+  const getByPath = (obj: unknown, path: string): unknown => {
+    if (!obj) return undefined;
+    return path.split('.').reduce<unknown>((acc, key) => {
+      if (!acc || typeof acc !== 'object') return undefined;
+      return (acc as Record<string, unknown>)[key];
+    }, obj);
+  };
+
+  const collectErrorItems = (
+    errs: FieldErrors<IntakeFormData>,
+  ): Array<{ path: string; message: string }> => {
+    const items: Array<{ path: string; message: string }> = [];
+    for (const path of Object.keys(pathToLabelKey)) {
+      const node = getByPath(errs, path);
+      const msg = getErrMsg(node);
+      if (msg) items.push({ path, message: msg });
+    }
+    return items;
+  };
+
+  const onInvalid = (errs: FieldErrors<IntakeFormData>) => {
+    const items = collectErrorItems(errs);
+    setValidationItems(items);
+    setShowValidationModal(true);
+    if (process.env.NODE_ENV !== 'production') {
+      try {
+        // Developer diagnostics (local only)
+        // Show a compact table of invalid fields + messages and a snapshot of current values
+        // Note: contains PII; do not enable in production
+
+        console.groupCollapsed('Intake validation errors');
+
+        console.table(
+          items.map((it) => ({
+            path: it.path,
+            label: pathToLabelKey[it.path] || '',
+            message: it.message,
+          })),
+        );
+
+        console.log('residentType:', residentType);
+
+        console.log('formValues:', getValues());
+
+        console.groupEnd();
+      } catch {
+        // ignore logging failures
+      }
+    }
+  };
+
+  // Auto-dismiss server modal after ~8 seconds
+  useEffect(() => {
+    if (!showServerModal) return;
+    const id = setTimeout(() => {
+      setShowServerModal(false);
+      setServerMsg(null);
+      setServerMsgType(null);
+    }, 8000);
+    return () => clearTimeout(id);
+  }, [showServerModal]);
 
   const ErrorText = ({ msg }: { msg?: string }) =>
     msg ? <p className="mt-1 text-sm text-red-600">{msg}</p> : null;
@@ -198,7 +321,7 @@ export default function IntakeForm() {
     </section>
   );
 
-  // Aandoening-keys strikt getypeerd
+  // Strictly typed condition keys used to render checkboxes.
   const conditionEntries: Array<[keyof IntakeFormData['medical']['conditions'], string]> = [
     ['hartziekte', t('cond.hartziekte')],
     ['hogeBloeddruk', t('cond.hogeBloeddruk')],
@@ -214,15 +337,93 @@ export default function IntakeForm() {
   ];
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-3xl space-y-6 p-4">
+    <form
+      onSubmit={handleSubmit(onSubmit, onInvalid)}
+      noValidate
+      className="prevent-scroll-anchor mx-auto max-w-3xl space-y-6 p-4"
+    >
       <h1 className="text-2xl font-semibold">{t('title')}</h1>
-      {serverMsg && (
-        <div role="status" className="rounded-md border p-3 text-sm" aria-live="polite">
-          {serverMsg}
+
+      {showServerModal && serverMsg && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setShowServerModal(false)}
+        >
+          <div
+            className={
+              'w-full max-w-md rounded-md p-4 shadow ' +
+              (serverMsgType === 'success'
+                ? 'bg-green-50 text-green-900'
+                : 'bg-red-50 text-red-900')
+            }
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-2 flex items-start justify-between gap-2">
+              <h2 className="text-lg font-medium">{t('title')}</h2>
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-black/10"
+                aria-label={t('buttons.close')}
+                onClick={() => setShowServerModal(false)}
+              >
+                <span aria-hidden>×</span>
+              </button>
+            </div>
+            <p className="text-sm">{serverMsg}</p>
+          </div>
         </div>
       )}
 
-      {/* Honeypot */}
+      {showValidationModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setShowValidationModal(false)}
+        >
+          <div
+            className="max-h-[80vh] w-full max-w-lg overflow-auto rounded-md bg-white p-4 shadow"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-3 flex items-start justify-between gap-2">
+              <h2 className="text-lg font-medium">{t('validation.modalTitle')}</h2>
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-black/10"
+                aria-label={t('buttons.close')}
+                onClick={() => setShowValidationModal(false)}
+              >
+                <span aria-hidden>×</span>
+              </button>
+            </div>
+            {validationItems.length > 0 ? (
+              <ul className="list-disc space-y-1 pl-5 text-sm">
+                {validationItems.map((it, i) => {
+                  const labelKey = pathToLabelKey[it.path];
+                  const label = labelKey ? t(`labels.${labelKey}`) : undefined;
+                  return (
+                    <li key={`${it.path}-${i}`}>
+                      {label ? (
+                        <>
+                          <span className="font-medium">{label}:</span> {it.message}
+                        </>
+                      ) : (
+                        it.message
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <p className="text-sm">{t('validation.generic')}</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Spam honeypot (hidden field) */}
       <div className="hidden" aria-hidden="true">
         <label className="block text-sm font-medium">{t('honeypot')}</label>
         <input
@@ -233,7 +434,7 @@ export default function IntakeForm() {
         />
       </div>
 
-      {/* Woonstatus */}
+      {/* Residence */}
       <Section title={t('sections.residence')}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
@@ -247,7 +448,7 @@ export default function IntakeForm() {
         </div>
       </Section>
 
-      {/* Persoonlijke gegevens */}
+      {/* Personal details */}
       <Section title={t('sections.person')}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
@@ -287,7 +488,7 @@ export default function IntakeForm() {
         </div>
       </Section>
 
-      {/* Adres & Contact */}
+      {/* Address & contact */}
       <Section title={t('sections.addressContact')}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
@@ -307,6 +508,15 @@ export default function IntakeForm() {
               className="mt-1 w-full rounded-md border p-2"
             />
             <ErrorText msg={errors.address?.number?.message} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">{t('labels.city')}</label>
+            <input
+              type="text"
+              {...register('address.city')}
+              className="mt-1 w-full rounded-md border p-2"
+            />
+            <ErrorText msg={errors.address?.city?.message} />
           </div>
 
           {residentType === 'tourist' && (
@@ -364,7 +574,9 @@ export default function IntakeForm() {
             <label className="block text-sm font-medium">{t('labels.phone2')}</label>
             <input
               type="tel"
-              {...register('phone2.number')}
+              {...register('phone2.number', {
+                setValueAs: (v) => (typeof v === 'string' && v.trim() === '' ? undefined : v),
+              })}
               className="mt-1 w-full rounded-md border p-2"
               inputMode="tel"
             />
@@ -384,7 +596,7 @@ export default function IntakeForm() {
         </div>
       </Section>
 
-      {/* Noodcontact */}
+      {/* Emergency contact */}
       <Section title={t('sections.emergency')}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <div>
@@ -419,7 +631,7 @@ export default function IntakeForm() {
         </div>
       </Section>
 
-      {/* Bonaire-specifiek */}
+      {/* Residency-specific (Bonaire) */}
       {residentType === 'resident' && (
         <Section title={t('sections.bonaireSpecific')}>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -446,30 +658,9 @@ export default function IntakeForm() {
         </Section>
       )}
 
-      {/* Medische anamnese */}
+      {/* Medical history */}
       <Section title={t('sections.medical')}>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <div>
-            <label className="block text-sm font-medium">{t('labels.height')}</label>
-            <input
-              type="text"
-              {...register('medical.heightCm')}
-              className="mt-1 w-full rounded-md border p-2"
-              placeholder="175"
-            />
-            <ErrorText msg={errors.medical?.heightCm?.message} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium">{t('labels.weight')}</label>
-            <input
-              type="text"
-              {...register('medical.weightKg')}
-              className="mt-1 w-full rounded-md border p-2"
-              placeholder="70"
-            />
-            <ErrorText msg={errors.medical?.weightKg?.message} />
-          </div>
-
           <div>
             <label className="block text-sm font-medium">{t('labels.lastDentalVisit')}</label>
             <select
@@ -521,7 +712,7 @@ export default function IntakeForm() {
             </select>
           </div>
 
-          {/* Medicatie */}
+          {/* Medications */}
           <div className="md:col-span-3">
             <label className="block text-sm font-medium">{t('labels.medications')}</label>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -534,21 +725,35 @@ export default function IntakeForm() {
                   'antidepressiva',
                   'anders',
                 ] as const
-              ).map((opt) => (
-                <label key={opt} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={medsSelected.includes(opt)}
-                    onChange={() => toggleArray('medical.medicationsSelected', opt)}
-                  />
-                  <span>{t(`options.medications.${opt}`)}</span>
-                </label>
-              ))}
+              ).map((opt) => {
+                const isOn = medsSelected.includes(opt);
+                return (
+                  <div key={opt} className="flex items-center gap-2 text-sm">
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={isOn}
+                      onClick={() => toggleArray('medical.medicationsSelected', opt)}
+                      className={
+                        'flex h-4 w-4 items-center justify-center rounded border ' +
+                        (isOn ? 'border-black bg-black text-white' : 'border-gray-400 bg-white')
+                      }
+                    >
+                      {isOn ? (
+                        <span className="leading-none" aria-hidden>
+                          ✓
+                        </span>
+                      ) : null}
+                    </button>
+                    <span className="select-none">{t(`options.medications.${opt}`)}</span>
+                  </div>
+                );
+              })}
             </div>
             <ErrorText msg={getErrMsg(errors.medical?.medicationsSelected)} />
           </div>
 
-          {/* Detailvelden medicatie */}
+          {/* Medication details (shown when applicable) */}
           {medsSelected.includes('bloedverdunners') && (
             <div className="md:col-span-3">
               <label className="block text-sm font-medium">{t('labels.med_bloedverdunners')}</label>
@@ -586,22 +791,36 @@ export default function IntakeForm() {
             </div>
           )}
 
-          {/* Allergieën */}
+          {/* Allergies */}
           <div className="md:col-span-3">
             <label className="block text-sm font-medium">{t('labels.allergies')}</label>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(
                 ['geen', 'penicilline', 'lokale_verdoving', 'latex', 'nikkel', 'anders'] as const
-              ).map((opt) => (
-                <label key={opt} className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={allergiesSelected.includes(opt)}
-                    onChange={() => toggleArray('medical.allergiesSelected', opt)}
-                  />
-                  <span>{t(`options.allergies.${opt}`)}</span>
-                </label>
-              ))}
+              ).map((opt) => {
+                const isOn = allergiesSelected.includes(opt);
+                return (
+                  <div key={opt} className="flex items-center gap-2 text-sm">
+                    <button
+                      type="button"
+                      role="checkbox"
+                      aria-checked={isOn}
+                      onClick={() => toggleArray('medical.allergiesSelected', opt)}
+                      className={
+                        'flex h-4 w-4 items-center justify-center rounded border ' +
+                        (isOn ? 'border-black bg-black text-white' : 'border-gray-400 bg-white')
+                      }
+                    >
+                      {isOn ? (
+                        <span className="leading-none" aria-hidden>
+                          ✓
+                        </span>
+                      ) : null}
+                    </button>
+                    <span className="select-none">{t(`options.allergies.${opt}`)}</span>
+                  </div>
+                );
+              })}
             </div>
             <ErrorText msg={getErrMsg(errors.medical?.allergiesSelected)} />
           </div>
@@ -618,13 +837,12 @@ export default function IntakeForm() {
             </div>
           )}
 
-          {/* Aandoeningen */}
+          {/* Conditions */}
           <div className="md:col-span-3">
             <label className="block text-sm font-medium">{t('labels.conditions')}</label>
             <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
               {conditionEntries.map(([key, label]) => (
                 <label key={key} className="flex items-center gap-2 text-sm">
-                  {/* field path is statisch en correct getypeerd */}
                   <input type="checkbox" {...register(`medical.conditions.${key}` as const)} />
                   <span>{label}</span>
                 </label>
@@ -660,7 +878,7 @@ export default function IntakeForm() {
         </div>
       </Section>
 
-      {/* Toestemmingen */}
+      {/* Consents */}
       <Section title={t('sections.consents')}>
         <label className="flex items-start gap-3">
           <input type="checkbox" {...register('marketingConsent')} className="mt-1" />
@@ -671,9 +889,17 @@ export default function IntakeForm() {
           <input type="checkbox" {...register('privacyConsent')} className="mt-1" />
           <span className="text-sm">
             {t('labels.privacyConsent')}{' '}
-            <a href="#" className="underline">
+            <button
+              type="button"
+              className="underline"
+              onClick={(e) => {
+                // Prevent toggling the checkbox and avoid page jump to top
+                e.stopPropagation();
+                // TODO: open privacy policy modal or navigate to a policy page
+              }}
+            >
               {t('labels.privacyPolicy')}
-            </a>
+            </button>
             .
           </span>
         </label>

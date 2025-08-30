@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Helpers & enums
 const phoneRegex = /^[+()0-9\s-]{6,20}$/;
 const sedulaRegex = /^[A-Za-z0-9\-]{5,20}$/;
 
@@ -49,26 +48,25 @@ const AllergyOptionEnum = z.enum([
 
 export const MedicalHistorySchema = z
   .object({
-    heightCm: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^\d{2,3}$/.test(v), { message: 'Gebruik centimeters (bijv. 175)' }),
-    weightKg: z
-      .string()
-      .optional()
-      .refine((v) => !v || /^\d{2,3}$/.test(v), { message: 'Gebruik kilogram (bijv. 70)' }),
-
     medicationsSelected: z.array(MedicationOptionEnum).default([]),
-    medicationDetails: z.object({
-      bloedverdunners: z.string().optional(),
-      diabetesmedicatie: z.string().optional(),
-      anders: z.string().optional(),
-    }),
+    // Details are only required when specific meds are selected;
+    // provide an empty object by default so missing details don't fail
+    // validation when 'geen' (none) is selected.
+    medicationDetails: z
+      .object({
+        bloedverdunners: z.string().optional(),
+        diabetesmedicatie: z.string().optional(),
+        anders: z.string().optional(),
+      })
+      .default({}),
 
     allergiesSelected: z.array(AllergyOptionEnum).default([]),
-    allergyDetails: z.object({
-      anders: z.string().optional(),
-    }),
+    // Same for allergies: default to empty object; details required only if 'anders' selected.
+    allergyDetails: z
+      .object({
+        anders: z.string().optional(),
+      })
+      .default({}),
 
     lastDentalVisit: z
       .enum(['<6m', '6-12m', '1-2j', '2-5j', '>5j', 'onbekend'])
@@ -205,7 +203,6 @@ export const IntakeSchema = z
 
     marketingConsent: z.boolean().default(false),
 
-    // Belangrijk: als boolean laten voor TypeScript, met refine==true voor runtime validatie
     privacyConsent: z
       .boolean()
       .refine((v) => v === true, { message: 'Je moet akkoord gaan met de privacyverklaring' }),

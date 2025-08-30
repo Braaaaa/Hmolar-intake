@@ -4,8 +4,8 @@
     "title": "Inschrijfformulier",
     "honeypot": "Laat dit veld leeg",
     "server": {
-      "ok": "✅ Bedankt! Uw inschrijving is ontvangen.",
-      "failPrefix": "❌ Mislukt:"
+      "success": "Registratie gelukt, bedankt voor uw interesse in onze tandartspraktijk",
+      "error": "Oeps, er ging iets mis, neem alstublieft contact met ons op"
     },
     "sections": {
       "residence": "Woonstatus",
@@ -37,8 +37,6 @@
       "emergencyPhone": "Telefoon noodcontact",
       "sedulaNumber": "Sedula-nummer",
       "primaryPhysician": "Huisarts",
-      "height": "Lengte (cm)",
-      "weight": "Gewicht (kg)",
       "lastDentalVisit": "Laatste tandartsbezoek",
       "brushingFreq": "Poetsfrequentie",
       "flossingFreq": "Flossen/tandenstokers",
@@ -152,7 +150,12 @@
     },
     "buttons": {
       "submit": "Versturen",
-      "submitting": "Versturen…"
+      "submitting": "Versturen…",
+      "close": "Sluiten"
+    },
+    "validation": {
+      "modalTitle": "Corrigeer het volgende",
+      "generic": "Er zijn ongeldige of ontbrekende velden."
     }
   }
 }
