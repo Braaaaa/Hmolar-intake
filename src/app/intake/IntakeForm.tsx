@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useTranslations } from 'next-intl';
 
@@ -26,11 +26,11 @@ export default function IntakeForm() {
   const [serverMsg, setServerMsg] = useState<string | null>(null);
   const [serverMsgType, setServerMsgType] = useState<'success' | 'error' | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const alertRef = useRef<HTMLDivElement | null>(null);
   const [showValidationModal, setShowValidationModal] = useState(false);
   const [validationItems, setValidationItems] = useState<Array<{ path: string; message: string }>>(
     [],
   );
+  const [showServerModal, setShowServerModal] = useState(false);
 
   const {
     register,
@@ -203,11 +203,13 @@ export default function IntakeForm() {
 
       setServerMsg(t('server.success'));
       setServerMsgType('success');
+      setShowServerModal(true);
       // Reset the form without relying on DOM events
       reset();
     } catch (_err: unknown) {
       setServerMsg(t('server.error'));
       setServerMsgType('error');
+      setShowServerModal(true);
     } finally {
       setSubmitting(false);
     }
@@ -302,27 +304,16 @@ export default function IntakeForm() {
     }
   };
 
-  // Auto-dismiss server message after ~8 seconds
+  // Auto-dismiss server modal after ~8 seconds
   useEffect(() => {
-    if (!serverMsg) return;
+    if (!showServerModal) return;
     const id = setTimeout(() => {
+      setShowServerModal(false);
       setServerMsg(null);
       setServerMsgType(null);
     }, 8000);
     return () => clearTimeout(id);
-  }, [serverMsg]);
-
-  // Smooth scroll to the alert when it appears
-  useEffect(() => {
-    if (!serverMsg) return;
-    const el = alertRef.current;
-    if (!el) return;
-    // Wait for layout, then scroll
-    const id = requestAnimationFrame(() => {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
-    });
-    return () => cancelAnimationFrame(id);
-  }, [serverMsg]);
+  }, [showServerModal]);
 
   const ErrorText = ({ msg }: { msg?: string }) =>
     msg ? <p className="mt-1 text-sm text-red-600">{msg}</p> : null;
@@ -357,30 +348,35 @@ export default function IntakeForm() {
     >
       <h1 className="text-2xl font-semibold">{t('title')}</h1>
 
-      {serverMsg && (
+      {showServerModal && serverMsg && (
         <div
-          ref={alertRef}
-          role="status"
-          aria-live="polite"
-          className={
-            'relative rounded-md border p-3 pr-9 text-sm ' +
-            (serverMsgType === 'success'
-              ? 'border-green-300 bg-green-50 text-green-800'
-              : 'border-red-300 bg-red-50 text-red-800')
-          }
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setShowServerModal(false)}
         >
-          {serverMsg}
-          <button
-            type="button"
-            aria-label={t('buttons.close')}
-            onClick={() => {
-              setServerMsg(null);
-              setServerMsgType(null);
-            }}
-            className="absolute right-2 top-2 inline-flex h-6 w-6 items-center justify-center rounded hover:bg-black/10 focus:outline-none focus:ring-2 focus:ring-black/20"
+          <div
+            className={
+              'w-full max-w-md rounded-md p-4 shadow ' +
+              (serverMsgType === 'success'
+                ? 'bg-green-50 text-green-900'
+                : 'bg-red-50 text-red-900')
+            }
+            onClick={(e) => e.stopPropagation()}
           >
-            <span aria-hidden>×</span>
-          </button>
+            <div className="mb-2 flex items-start justify-between gap-2">
+              <h2 className="text-lg font-medium">{t('title')}</h2>
+              <button
+                type="button"
+                className="inline-flex h-8 w-8 items-center justify-center rounded hover:bg-black/10"
+                aria-label={t('buttons.close')}
+                onClick={() => setShowServerModal(false)}
+              >
+                <span aria-hidden>×</span>
+              </button>
+            </div>
+            <p className="text-sm">{serverMsg}</p>
+          </div>
         </div>
       )}
 
