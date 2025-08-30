@@ -31,11 +31,14 @@ function ageFromDob(dob: Date | null): number | null {
   return age;
 }
 
-export default async function Page(props: { searchParams?: { page?: string; q?: string } }) {
+export default async function Page(props: {
+  searchParams?: Promise<{ page?: string; q?: string }>;
+}) {
   const take = 20;
-  const page = Math.max(1, Number(props.searchParams?.page ?? '1') || 1);
+  const sp = (await props.searchParams) || {};
+  const page = Math.max(1, Number(sp.page ?? '1') || 1);
   const skip = (page - 1) * take;
-  const q = (props.searchParams?.q ?? '').trim();
+  const q = (sp.q ?? '').trim();
 
   // Basic query with optional search on name/email/phone
   const where = q
