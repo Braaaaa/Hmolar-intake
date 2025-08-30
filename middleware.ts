@@ -58,6 +58,6 @@ export default function middleware(req: Request) {
 }
 
 export const config = {
-  // Apply to all non-static, non-API paths (admin included)
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
+  // Only run middleware on admin routes (with and without a locale prefix)
+  matcher: ['/admin/:path*', '/:locale/admin/:path*'],
 };
