@@ -249,30 +249,24 @@ export default function IntakeForm() {
     privacyConsent: 'privacyConsent',
   };
 
+  const getByPath = (obj: unknown, path: string): unknown => {
+    if (!obj) return undefined;
+    return path.split('.').reduce<unknown>((acc, key) => {
+      if (!acc || typeof acc !== 'object') return undefined;
+      return (acc as Record<string, unknown>)[key];
+    }, obj);
+  };
+
   const collectErrorItems = (
     errs: FieldErrors<IntakeFormData>,
   ): Array<{ path: string; message: string }> => {
-    const out: Array<{ path: string; message: string }> = [];
-    const walk = (node: unknown, prefix: string[]) => {
-      if (!node || typeof node !== 'object') return;
-      const rec = node as Record<string, unknown>;
-      if (typeof (rec as { message?: unknown }).message === 'string') {
-        out.push({ path: prefix.join('.'), message: (rec as { message: string }).message });
-      }
-      for (const [k, v] of Object.entries(rec)) {
-        if (k === 'ref' || k === 'type' || k === 'types') continue;
-        walk(v, k === 'root' ? prefix : [...prefix, k]);
-      }
-    };
-    walk(errs as unknown as Record<string, unknown>, []);
-    // De-duplicate by path+message
-    const seen = new Set<string>();
-    return out.filter((it) => {
-      const key = `${it.path}|${it.message}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+    const items: Array<{ path: string; message: string }> = [];
+    for (const path of Object.keys(pathToLabelKey)) {
+      const node = getByPath(errs, path);
+      const msg = getErrMsg(node);
+      if (msg) items.push({ path, message: msg });
+    }
+    return items;
   };
 
   const onInvalid = (errs: FieldErrors<IntakeFormData>) => {
